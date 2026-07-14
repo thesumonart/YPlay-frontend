@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -11,9 +12,16 @@ interface SearchBarProps {
 
 export function SearchBar({ className, placeholder = "Search videos, channels..." }: SearchBarProps) {
   const [value, setValue] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = value.trim();
+    if (trimmed) router.push(`/search?q=${encodeURIComponent(trimmed)}`);
+  };
 
   return (
-    <div className={cn("relative flex items-center", className)}>
+    <form onSubmit={handleSubmit} className={cn("relative flex items-center", className)}>
       <Search
         className="absolute left-3 h-4 w-4 text-[var(--text-secondary)] pointer-events-none"
         aria-hidden="true"
@@ -33,6 +41,7 @@ export function SearchBar({ className, placeholder = "Search videos, channels...
       />
       {value && (
         <button
+          type="button"
           onClick={() => setValue("")}
           aria-label="Clear search"
           className="absolute right-3 text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors"
@@ -40,6 +49,6 @@ export function SearchBar({ className, placeholder = "Search videos, channels...
           <X className="h-4 w-4" />
         </button>
       )}
-    </div>
+    </form>
   );
 }

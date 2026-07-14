@@ -1,0 +1,71 @@
+import Link from "next/link";
+import Image from "next/image";
+import { CheckCircle2 } from "lucide-react";
+import { motion } from "framer-motion";
+import type { Video } from "@/types";
+import { formatViews, formatDuration, timeAgo } from "@/lib/utils";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/shared/Avatar";
+
+interface SearchResultCardProps {
+  video: Video;
+}
+
+export function SearchResultCard({ video }: SearchResultCardProps) {
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="group flex gap-4"
+    >
+      {/* Thumbnail */}
+      <Link
+        href={`/watch/${video.id}`}
+        className="relative shrink-0 w-44 sm:w-64 md:w-80 aspect-video rounded-xl overflow-hidden bg-[var(--surface-secondary)]"
+      >
+        <Image
+          src={video.thumbnail}
+          alt={video.title}
+          fill
+          sizes="(max-width: 640px) 176px, (max-width: 768px) 256px, 320px"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        <span className="absolute bottom-2 right-2 rounded-md bg-black/80 px-1.5 py-0.5 text-[11px] font-medium text-white">
+          {formatDuration(video.duration)}
+        </span>
+      </Link>
+
+      {/* Info */}
+      <div className="flex flex-col gap-2 flex-1 min-w-0 py-1">
+        <Link
+          href={`/watch/${video.id}`}
+          className="text-sm sm:text-base font-semibold text-[var(--text)] line-clamp-2 leading-snug hover:text-[var(--primary)] transition-colors"
+        >
+          {video.title}
+        </Link>
+
+        <p className="text-xs text-[var(--text-secondary)]">
+          {formatViews(video.views)} views · {timeAgo(video.publishedAt)}
+        </p>
+
+        <Link
+          href={`/channel/${video.channel.id}`}
+          className="flex items-center gap-2 group/ch"
+        >
+          <Avatar className="h-6 w-6">
+            <AvatarImage src={video.channel.avatar} alt={video.channel.name} />
+            <AvatarFallback>{video.channel.name[0]}</AvatarFallback>
+          </Avatar>
+          <span className="flex items-center gap-1 text-xs text-[var(--text-secondary)] group-hover/ch:text-[var(--text)] transition-colors">
+            {video.channel.name}
+            {video.channel.verified && <CheckCircle2 className="h-3 w-3" />}
+          </span>
+        </Link>
+
+        <p className="hidden md:block text-xs text-[var(--text-secondary)] line-clamp-2 leading-relaxed mt-1">
+          {video.description}
+        </p>
+      </div>
+    </motion.article>
+  );
+}
