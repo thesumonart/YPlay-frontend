@@ -14,7 +14,9 @@ export function ShortsView() {
   const goTo = useCallback((index: number) => {
     const clamped = Math.max(0, Math.min(shortVideos.length - 1, index));
     setActiveIndex(clamped);
-    const el = containerRef.current?.children[clamped] as HTMLElement | undefined;
+    const el = containerRef.current?.children[clamped] as
+      | HTMLElement
+      | undefined;
     el?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
@@ -53,13 +55,13 @@ export function ShortsView() {
           disabled={activeIndex === 0}
           aria-label="Previous short"
           className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-full bg-[var(--surface)] border border-[var(--border)] shadow-sm transition-all",
+            "flex h-10 w-10 items-center justify-center rounded-full bg-surface border border-border shadow-sm transition-all",
             activeIndex === 0
               ? "opacity-30 cursor-not-allowed"
-              : "hover:bg-[var(--surface-secondary)] hover:border-[var(--primary)]/40"
+              : "hover:bg-surface-secondary hover:border-primary/40",
           )}
         >
-          <ChevronUp className="h-5 w-5 text-[var(--text)]" />
+          <ChevronUp className="h-5 w-5 text-text" />
         </motion.button>
 
         <motion.button
@@ -68,13 +70,13 @@ export function ShortsView() {
           disabled={activeIndex === shortVideos.length - 1}
           aria-label="Next short"
           className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-full bg-[var(--surface)] border border-[var(--border)] shadow-sm transition-all",
+            "flex h-10 w-10 items-center justify-center rounded-full bg-surface border border-border shadow-sm transition-all",
             activeIndex === shortVideos.length - 1
               ? "opacity-30 cursor-not-allowed"
-              : "hover:bg-[var(--surface-secondary)] hover:border-[var(--primary)]/40"
+              : "hover:bg-surface-secondary hover:border-(--primary)/40",
           )}
         >
-          <ChevronDown className="h-5 w-5 text-[var(--text)]" />
+          <ChevronDown className="h-5 w-5 text-text" />
         </motion.button>
       </div>
 
@@ -88,8 +90,8 @@ export function ShortsView() {
             className={cn(
               "rounded-full transition-all duration-200",
               i === activeIndex
-                ? "h-5 w-1.5 bg-[var(--primary)]"
-                : "h-1.5 w-1.5 bg-[var(--border)] hover:bg-[var(--text-secondary)]"
+                ? "h-5 w-1.5 bg-primary"
+                : "h-1.5 w-1.5 bg-border hover:bg-text-secondary",
             )}
           />
         ))}
