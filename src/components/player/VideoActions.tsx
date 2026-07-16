@@ -7,6 +7,7 @@ import type { Video } from "@/types";
 import { formatViews } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/shared/Button";
+import { ShareModal } from "@/components/shared/ShareModal";
 
 interface VideoActionsProps {
   video: Video;
@@ -16,6 +17,11 @@ export function VideoActions({ video }: VideoActionsProps) {
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+
+  const shareUrl = typeof window !== "undefined"
+    ? `${window.location.origin}/watch/${video.id}`
+    : `https://yplay.app/watch/${video.id}`;
 
   const likeCount = video.likes + (liked ? 1 : 0);
 
@@ -64,10 +70,18 @@ export function VideoActions({ video }: VideoActionsProps) {
         </motion.button>
       </div>
 
-      <Button variant="secondary" size="md" className="gap-2">
+      <Button variant="secondary" size="md" className="gap-2" onClick={() => setShareOpen(true)}>
         <Share2 className="h-4 w-4" />
         Share
       </Button>
+
+      <ShareModal
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        url={shareUrl}
+        title={video.title}
+        videoId={video.id}
+      />
 
       <motion.div whileTap={{ scale: 0.95 }}>
         <Button
