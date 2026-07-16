@@ -1,6 +1,10 @@
 "use client";
 
-import { Bell, Menu, Upload } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Bell, Menu, Upload, Search, X, CheckCheck, Settings, LayoutDashboard, LogOut, User, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import { Logo } from "@/components/shared/Logo";
 import { SearchBar } from "@/components/shared/SearchBar";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
@@ -10,16 +14,326 @@ import { Tooltip } from "@/components/shared/Tooltip";
 import { useUIStore } from "@/store/ui";
 import { currentUser } from "@/data/users";
 import { mockNotifications } from "@/data/notifications";
+import { cn, timeAgo, formatViews } from "@/lib/utils";
+import type { Notification } from "@/types";
+import {
+  Upload as UploadIcon,
+  MessageSquare,
+  ThumbsUp,
+  Users,
+  Reply,
+  Radio,
+} from "lucide-react";
 
+// ── Notification type config ──────────────────────────────────────────────────
+const NOTIF_TYPE: Record<
+  Notification["type"],
+  { icon: React.ElementType; color: string; bg: string }
+> = {
+  upload:       { icon: UploadIcon,      color: "text-[var(--secondary)]", bg: "bg-[var(--secondary)]/10" },
+  comment:      { icon: MessageSquare,   color: "text-[var(--accent)]",    bg: "bg-[var(--accent)]/10"    },
+  reply:        { icon: Reply,           color: "text-[var(--accent)]",    bg: "bg-[var(--accent)]/10"    },
+  like:         { icon: ThumbsUp,        color: "text-[var(--primary)]",   bg: "bg-[var(--primary)]/10"   },
+  subscription: { icon: Users,           color: "text-[var(--success)]",   bg: "bg-[var(--success)]/10"   },
+  live:         { icon: Radio,           color: "text-[var(--danger)]",    bg: "bg-[var(--danger)]/10"    },
+};
+
+// ── useClickOutside ───────────────────────────────────────────────────────────
+function useClickOutside(ref: React.RefObject<HTMLElement | null>, handler: () => void) {
+  useEffect(() => {
+    const listener = (e: MouseEvent | TouchEvent) => {
+      if (!ref.current || ref.current.contains(e.target as Node)) return;
+      handler();
+    };
+    document.addEventListener("mousedown", listener);
+    document.addEventListener("touchstart", listener);
+    return () => {
+      document.removeEventListener("mousedown", listener);
+      document.removeEventListener("touchstart", listener);
+    };
+  }, [ref, handler]);
+}
+
+// ── NotificationsPanel ────────────────────────────────────────────────────────
+interface NotificationsPanelProps {
+  onClose: () => void;
+}
+
+function NotificationsPanel({ onClose }: NotificationsPanelProps) {
+  const [items, setItems] = useState<Notification[]>(mockNotifications);
+  const unread = items.filter((n) => !n.read);
+
+  const markAllRead = () => setItems((prev) => prev.map((n) => ({ ...n, read: true })));
+  const dismiss = (id: string) => setItems((prev) => prev.filter((n) => n.id !== id));
+  const markRead = (id: string) =>
+    setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+
+  const preview = items.slice(0, 6);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 8, scale: 0.97 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+      className="absolute right-0 top-full mt-2 w-[360px] max-w-[calc(100vw-2rem)] rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-xl overflow-hidden z-50"
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-[var(--text)]">Notifications</span>
+          {unread.length > 0 && (
+            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--primary)] px-1.5 text-[10px] font-bold text-white">
+              {unread.length}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-1">
+          {unread.length > 0 && (
+            <Tooltip content="Mark all read" side="bottom">
+              <button
+                onClick={markAllRead}
+                aria-label="Mark all notifications as read"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text)] transition-colors"
+              >
+                <CheckCheck className="h-3.5 w-3.5" />
+              </button>
+            </Tooltip>
+          )}
+          <Tooltip content="Close" side="bottom">
+            <button
+              onClick={onClose}
+              aria-label="Close notifications"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text)] transition-colors"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </Tooltip>
+        </div>
+      </div>
+
+      {/* List */}
+      <div className="max-h-[420px] overflow-y-auto">
+        {preview.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 gap-2 text-center">
+            <Bell className="h-8 w-8 text-[var(--text-secondary)]" />
+            <p className="text-sm font-medium text-[var(--text)]">All caught up!</p>
+            <p className="text-xs text-[var(--text-secondary)]">No notifications right now</p>
+          </div>
+        ) : (
+          <AnimatePresence initial={false}>
+            {preview.map((n) => {
+              const { icon: Icon, color, bg } = NOTIF_TYPE[n.type];
+              return (
+                <motion.div
+                  key={n.id}
+                  layout
+                  exit={{ opacity: 0, height: 0, overflow: "hidden" }}
+                  transition={{ duration: 0.18 }}
+                  onClick={() => !n.read && markRead(n.id)}
+                  className={cn(
+                    "group relative flex items-start gap-3 px-4 py-3 cursor-pointer transition-colors border-b border-[var(--border)] last:border-0",
+                    n.read
+                      ? "hover:bg-[var(--surface-secondary)]/60"
+                      : "bg-[var(--surface-secondary)]/40 hover:bg-[var(--surface-secondary)]"
+                  )}
+                >
+                  {/* Unread dot */}
+                  {!n.read && (
+                    <span className="absolute left-1.5 top-4 h-1.5 w-1.5 rounded-full bg-[var(--primary)]" />
+                  )}
+
+                  {/* Avatar + type badge */}
+                  <div className="relative shrink-0">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={n.actor.avatar} alt={n.actor.name} />
+                      <AvatarFallback>{n.actor.name[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className={cn("absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full", bg)}>
+                      <Icon className={cn("h-2.5 w-2.5", color)} />
+                    </div>
+                  </div>
+
+                  {/* Text */}
+                  <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                    <p className={cn("text-xs leading-snug line-clamp-2", n.read ? "text-[var(--text-secondary)]" : "text-[var(--text)] font-medium")}>
+                      {n.message}
+                    </p>
+                    <p className="text-[11px] text-[var(--text-secondary)]">{timeAgo(n.createdAt)}</p>
+                  </div>
+
+                  {/* Thumbnail */}
+                  {n.videoId && n.videoThumbnail && (
+                    <Link
+                      href={`/watch/${n.videoId}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="relative shrink-0 w-14 aspect-video rounded-lg overflow-hidden bg-[var(--surface-secondary)] hover:opacity-80 transition-opacity"
+                    >
+                      <Image src={n.videoThumbnail} alt="" fill sizes="56px" className="object-cover" />
+                    </Link>
+                  )}
+
+                  {/* Dismiss */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); dismiss(n.id); }}
+                    aria-label="Dismiss"
+                    className="shrink-0 flex h-6 w-6 items-center justify-center rounded-md text-[var(--text-secondary)] opacity-0 group-hover:opacity-100 hover:bg-[var(--border)] hover:text-[var(--text)] transition-all"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        )}
+      </div>
+
+      {/* Footer */}
+      {items.length > 0 && (
+        <div className="border-t border-[var(--border)] px-4 py-2.5">
+          <Link
+            href="/notifications"
+            onClick={onClose}
+            className="flex items-center justify-center gap-1 text-xs font-medium text-[var(--primary)] hover:text-[var(--primary-hover)] transition-colors"
+          >
+            View all notifications
+            <ChevronRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
+// ── ProfilePanel ──────────────────────────────────────────────────────────────
+interface ProfilePanelProps {
+  onClose: () => void;
+}
+
+function ProfilePanel({ onClose }: ProfilePanelProps) {
+  const menuItems = [
+    { href: `/channel/u1`,   icon: User,            label: "Your channel" },
+    { href: "/studio",       icon: LayoutDashboard, label: "Creator Studio" },
+    { href: "/settings",     icon: Settings,        label: "Settings" },
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 8, scale: 0.97 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+      className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-xl overflow-hidden z-50"
+    >
+      {/* Profile header */}
+      <div className="flex items-center gap-3 px-4 py-4 border-b border-[var(--border)]">
+        <Avatar className="h-10 w-10 shrink-0">
+          <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
+          <AvatarFallback>Y</AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col gap-0.5 min-w-0">
+          <p className="text-sm font-semibold text-[var(--text)] truncate">{currentUser.name}</p>
+          <p className="text-xs text-[var(--text-secondary)] truncate">{currentUser.handle}</p>
+        </div>
+      </div>
+
+      {/* Menu items */}
+      <div className="p-1.5">
+        {menuItems.map(({ href, icon: Icon, label }) => (
+          <Link
+            key={href}
+            href={href}
+            onClick={onClose}
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text)] transition-colors"
+          >
+            <Icon className="h-4 w-4 shrink-0" />
+            {label}
+          </Link>
+        ))}
+      </div>
+
+      {/* Divider + sign out */}
+      <div className="border-t border-[var(--border)] p-1.5">
+        <button
+          onClick={onClose}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text)] transition-colors"
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          Sign out
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── MobileSearchOverlay ───────────────────────────────────────────────────────
+interface MobileSearchOverlayProps {
+  onClose: () => void;
+}
+
+function MobileSearchOverlay({ onClose }: MobileSearchOverlayProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.18 }}
+      className="absolute left-0 right-0 top-full z-40 border-b border-[var(--border)] bg-[var(--surface)] px-4 py-3 sm:hidden shadow-md"
+    >
+      <div className="flex items-center gap-2">
+        <div className="flex-1">
+          <SearchBar placeholder="Search videos, channels..." />
+        </div>
+        <button
+          onClick={onClose}
+          aria-label="Close search"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text)] transition-colors"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
 export function Header() {
   const { toggleSidebar, toggleSidebarCollapsed } = useUIStore();
+
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+  const notifRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  const closeNotif = useCallback(() => setNotifOpen(false), []);
+  const closeProfile = useCallback(() => setProfileOpen(false), []);
+
+  useClickOutside(notifRef, closeNotif);
+  useClickOutside(profileRef, closeProfile);
+
+  // Close panels on Escape
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setNotifOpen(false);
+        setProfileOpen(false);
+        setMobileSearchOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
+
   const unreadCount = mockNotifications.filter((n) => !n.read).length;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-[var(--header-height)] border-b border-[var(--border)] bg-[var(--surface)]/90 backdrop-blur-md">
       <div className="flex h-full items-center gap-3 px-4">
+
         {/* Menu + Logo */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <Tooltip content="Menu" side="bottom">
             <Button
               variant="ghost"
@@ -43,47 +357,106 @@ export function Header() {
           <Logo />
         </div>
 
-        {/* Search */}
+        {/* Desktop search */}
         <div className="flex-1 max-w-xl mx-auto hidden sm:block">
           <SearchBar />
         </div>
 
         {/* Actions */}
-        <div className="ml-auto flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="sm:hidden"
-            aria-label="Search"
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-            </svg>
-          </Button>
+        <div className="ml-auto flex items-center gap-1 shrink-0">
 
+          {/* Mobile search toggle */}
+          <Tooltip content="Search" side="bottom">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="sm:hidden"
+              aria-label="Search"
+              aria-expanded={mobileSearchOpen}
+              onClick={() => {
+                setMobileSearchOpen((o) => !o);
+                setNotifOpen(false);
+                setProfileOpen(false);
+              }}
+            >
+              <Search className="h-5 w-5" />
+            </Button>
+          </Tooltip>
+
+          {/* Upload */}
           <Tooltip content="Upload" side="bottom">
-            <Button variant="ghost" size="icon" aria-label="Upload video">
-              <Upload className="h-5 w-5" />
+            <Button variant="ghost" size="icon" aria-label="Upload video" asChild>
+              <Link href="/studio/upload">
+                <Upload className="h-5 w-5" />
+              </Link>
             </Button>
           </Tooltip>
 
-          <Tooltip content="Notifications" side="bottom">
-            <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
-              <Bell className="h-5 w-5" />
-              {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[var(--primary)]" />
-              )}
-            </Button>
-          </Tooltip>
+          {/* Notifications */}
+          <div ref={notifRef} className="relative">
+            <Tooltip content="Notifications" side="bottom">
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Notifications"
+                aria-expanded={notifOpen}
+                aria-haspopup="true"
+                className="relative"
+                onClick={() => {
+                  setNotifOpen((o) => !o);
+                  setProfileOpen(false);
+                  setMobileSearchOpen(false);
+                }}
+              >
+                <Bell className="h-5 w-5" />
+                {unreadCount > 0 && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute top-1.5 right-1.5 flex h-2 w-2 items-center justify-center rounded-full bg-[var(--primary)]"
+                  />
+                )}
+              </Button>
+            </Tooltip>
+            <AnimatePresence>
+              {notifOpen && <NotificationsPanel onClose={closeNotif} />}
+            </AnimatePresence>
+          </div>
 
+          {/* Theme toggle */}
           <ThemeToggle />
 
-          <Avatar className="h-8 w-8 cursor-pointer ml-1">
-            <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
-            <AvatarFallback>Y</AvatarFallback>
-          </Avatar>
+          {/* Profile */}
+          <div ref={profileRef} className="relative ml-1">
+            <button
+              onClick={() => {
+                setProfileOpen((o) => !o);
+                setNotifOpen(false);
+                setMobileSearchOpen(false);
+              }}
+              aria-label="Account menu"
+              aria-expanded={profileOpen}
+              aria-haspopup="true"
+              className="rounded-full ring-2 ring-transparent hover:ring-[var(--primary)]/40 transition-all focus-visible:outline-none focus-visible:ring-[var(--primary)]"
+            >
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
+                <AvatarFallback>Y</AvatarFallback>
+              </Avatar>
+            </button>
+            <AnimatePresence>
+              {profileOpen && <ProfilePanel onClose={closeProfile} />}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
+
+      {/* Mobile search overlay */}
+      <AnimatePresence>
+        {mobileSearchOpen && (
+          <MobileSearchOverlay onClose={() => setMobileSearchOpen(false)} />
+        )}
+      </AnimatePresence>
     </header>
   );
 }

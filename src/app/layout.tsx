@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileSidebar } from "@/components/layout/MobileSidebar";
 import { MainContent } from "@/components/layout/MainContent";
+import { NavigationProgress } from "@/components/layout/NavigationProgress";
 import "@/styles/globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <body className="min-h-screen bg-[var(--background)] text-[var(--text)] antialiased">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <NavigationProgress />
           <Header />
           <Sidebar />
           <MobileSidebar />
