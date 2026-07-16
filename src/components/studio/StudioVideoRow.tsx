@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { MoreHorizontal, Eye, ThumbsUp, MessageSquare, Pencil, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -29,6 +30,7 @@ function getStatus(index: number): Status {
 }
 
 export function StudioVideoRow({ video, index }: StudioVideoRowProps) {
+  const router = useRouter();
   const status = getStatus(index);
   const { label, className } = STATUS_CONFIG[status];
 
@@ -122,12 +124,13 @@ export function StudioVideoRow({ video, index }: StudioVideoRowProps) {
               className="z-50 min-w-36 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 shadow-lg animate-in fade-in-0 zoom-in-95"
             >
               {[
-                { icon: Pencil, label: "Edit" },
-                { icon: Eye,    label: "View" },
-                { icon: Trash2, label: "Delete", danger: true },
-              ].map(({ icon: Icon, label: itemLabel, danger }) => (
+                { icon: Pencil, label: "Edit",   action: () => router.push(`/studio/content/${video.id}`) },
+                { icon: Eye,    label: "View",   action: () => router.push(`/watch/${video.id}`) },
+                { icon: Trash2, label: "Delete", action: () => {}, danger: true },
+              ].map(({ icon: Icon, label: itemLabel, action, danger }) => (
                 <DropdownMenu.Item
                   key={itemLabel}
+                  onSelect={action}
                   className={cn(
                     "flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm outline-none transition-colors",
                     danger
