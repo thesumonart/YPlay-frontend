@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Play, Pause, Volume2, VolumeX, Maximize, Settings,
-  SkipForward, SkipBack,
+  SkipForward, SkipBack, Keyboard,
 } from "lucide-react";
 import type { Video } from "@/types";
 import { formatDuration } from "@/lib/utils";
@@ -13,15 +13,116 @@ import { cn } from "@/lib/utils";
 
 interface VideoPlayerProps {
   video: Video;
+  onEnded?: () => void;
+  autoplay?: boolean;
+  onAutoplayToggle?: (val: boolean) => void;
 }
 
-export function VideoPlayer({ video }: VideoPlayerProps) {
+const SHORTCUTS = [
+  { keys: ["K", "Space"], label: "Play / Pause" },
+  { keys: ["J"], label: "Rewind 10s" },
+  { keys: ["L"], label: "Forward 10s" },
+  { keys: ["←"], label: "Rewind 5s" },
+  { keys: ["→"], label: "Forward 5s" },
+  { keys: ["M"], label: "Mute / Unmute" },
+  { keys: ["F"], label: "Fullscreen" },
+  { keys: ["?"], label: "Show shortcuts" },
+];
+
+export function VideoPlayer({ video, onEnded, autoplay = true, onAutoplayToggle }: VideoPlayerProps) {
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showControls, setShowControls] = useState(true);
   const [showPlayPulse, setShowPlayPulse] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const controlsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const nudge = useCallback((seconds: number) => {
+    setProgress((p) => {
+      const next = Math.max(0, Math.min(1, p + seconds / video.duration));
+      if (next >= 1) onEnded?.();
+      return next;
+    });
+  }, [video.duration, onEnded]);
+
+  const togglePlay = useCallback(() => {
+    setPlaying((p) => !p);
+    setShowPlayPulse(true);
+    setTimeout(() => setShowPlayPulse(false), 600);
+    setShowControls(true);
+    if (controlsTimer.current) clearTimeout(controlsTimer.current);
+    setPlaying((p) => {
+      if (p) controlsTimer.current = setTimeout(() => setShowControls(false), 2500);
+      return p;
+    });
+  }, []);
+
+  // Keyboard shortcuts — only when player is focused/hovered
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      // Don't fire when typing in inputs
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement).isContentEditable) return;
+
+      switch (e.key) {
+        case "k":
+        case "K":
+          e.preventDefault();
+          setPlaying((p) => !p);
+          setShowPlayPulse(true);
+          setTimeout(() => setShowPlayPulse(false), 600);
+          break;
+        case " ":
+          // Only intercept space if player container is focused
+          if (containerRef.current?.contains(document.activeElement) || document.activeElement === document.body) {
+            e.preventDefault();
+            setPlaying((p) => !p);
+            setShowPlayPulse(true);
+            setTimeout(() => setShowPlayPulse(false), 600);
+          }
+          break;
+        case "j":
+        case "J":
+          e.preventDefault();
+          nudge(-10);
+          break;
+        case "l":
+        case "L":
+          e.preventDefault();
+          nudge(10);
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          nudge(-5);
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          nudge(5);
+          break;
+        case "m":
+        case "M":
+          e.preventDefault();
+          setMuted((m) => !m);
+          break;
+        case "f":
+        case "F":
+          e.preventDefault();
+          if (containerRef.current) {
+            if (!document.fullscreenElement) containerRef.current.requestFullscreen().catch(() => {});
+            else document.exitFullscreen().catch(() => {});
+          }
+          break;
+        case "?":
+          e.preventDefault();
+          setShowShortcuts((s) => !s);
+          break;
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [nudge]);
 
   const handleMouseMove = useCallback(() => {
     setShowControls(true);
@@ -31,27 +132,24 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
     }
   }, [playing]);
 
-  const togglePlay = () => {
-    setPlaying((p) => !p);
-    setShowPlayPulse(true);
-    setTimeout(() => setShowPlayPulse(false), 600);
-    setShowControls(true);
-    if (controlsTimer.current) clearTimeout(controlsTimer.current);
-    if (!playing) {
-      controlsTimer.current = setTimeout(() => setShowControls(false), 2500);
-    }
-  };
-
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const pct = (e.clientX - rect.left) / rect.width;
-    setProgress(Math.max(0, Math.min(1, pct)));
+    const next = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    setProgress(next);
+    if (next >= 1) onEnded?.();
+  };
+
+  const skipForward = () => {
+    setProgress(1);
+    setPlaying(false);
+    onEnded?.();
   };
 
   const elapsed = Math.floor(progress * video.duration);
 
   return (
     <div
+      ref={containerRef}
       className="relative w-full overflow-hidden rounded-xl bg-black aspect-video group select-none"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => playing && setShowControls(false)}
@@ -66,10 +164,17 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
         className={cn("object-cover transition-opacity duration-300", playing && "opacity-60")}
       />
 
-      {/* Click to play/pause */}
-      <div className="absolute inset-0 cursor-pointer" onClick={togglePlay} aria-label={playing ? "Pause" : "Play"} role="button" tabIndex={0} onKeyDown={(e) => e.key === " " && togglePlay()} />
+      {/* Click overlay */}
+      <div
+        className="absolute inset-0 cursor-pointer"
+        onClick={() => { setPlaying((p) => !p); setShowPlayPulse(true); setTimeout(() => setShowPlayPulse(false), 600); }}
+        role="button"
+        aria-label={playing ? "Pause" : "Play"}
+        tabIndex={0}
+        onKeyDown={(e) => e.key === " " && e.preventDefault()}
+      />
 
-      {/* Center play pulse */}
+      {/* Play pulse */}
       <AnimatePresence>
         {showPlayPulse && (
           <motion.div
@@ -81,7 +186,9 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
             className="pointer-events-none absolute inset-0 flex items-center justify-center"
           >
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20">
-              {playing ? <Play className="h-7 w-7 fill-white text-white" /> : <Pause className="h-7 w-7 fill-white text-white" />}
+              {playing
+                ? <Pause className="h-7 w-7 fill-white text-white" />
+                : <Play className="h-7 w-7 fill-white text-white" />}
             </div>
           </motion.div>
         )}
@@ -96,9 +203,51 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
         </div>
       )}
 
+      {/* Keyboard shortcuts overlay */}
+      <AnimatePresence>
+        {showShortcuts && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.18 }}
+            className="absolute inset-0 z-20 flex items-center justify-center bg-black/75 backdrop-blur-sm"
+            onClick={() => setShowShortcuts(false)}
+          >
+            <div
+              className="w-72 rounded-2xl border border-white/10 bg-black/80 p-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-2 mb-4">
+                <Keyboard className="h-4 w-4 text-white/60" />
+                <span className="text-sm font-semibold text-white">Keyboard shortcuts</span>
+              </div>
+              <div className="flex flex-col gap-2">
+                {SHORTCUTS.map(({ keys, label }) => (
+                  <div key={label} className="flex items-center justify-between gap-4">
+                    <span className="text-xs text-white/60">{label}</span>
+                    <div className="flex items-center gap-1">
+                      {keys.map((k) => (
+                        <kbd
+                          key={k}
+                          className="inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-white/20 bg-white/10 px-1.5 font-mono text-[11px] font-medium text-white"
+                        >
+                          {k}
+                        </kbd>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-4 text-center text-[11px] text-white/30">Press ? or click anywhere to close</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Controls overlay */}
       <AnimatePresence>
-        {showControls && (
+        {showControls && !showShortcuts && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -125,15 +274,15 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
               </div>
             </div>
 
-            {/* Bottom controls row */}
+            {/* Controls row */}
             <div className="flex items-center gap-3">
-              <button onClick={togglePlay} aria-label={playing ? "Pause" : "Play"} className="text-white hover:text-white/80 transition-colors">
+              <button onClick={() => { setPlaying((p) => !p); }} aria-label={playing ? "Pause" : "Play"} className="text-white hover:text-white/80 transition-colors">
                 {playing ? <Pause className="h-5 w-5 fill-white" /> : <Play className="h-5 w-5 fill-white" />}
               </button>
-              <button aria-label="Skip back 10s" className="text-white hover:text-white/80 transition-colors">
+              <button onClick={() => nudge(-10)} aria-label="Rewind 10s" className="text-white hover:text-white/80 transition-colors">
                 <SkipBack className="h-4 w-4" />
               </button>
-              <button aria-label="Skip forward 10s" className="text-white hover:text-white/80 transition-colors">
+              <button onClick={skipForward} aria-label="Skip to end" className="text-white hover:text-white/80 transition-colors">
                 <SkipForward className="h-4 w-4" />
               </button>
               <button onClick={() => setMuted((m) => !m)} aria-label={muted ? "Unmute" : "Mute"} className="text-white hover:text-white/80 transition-colors">
@@ -142,11 +291,38 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
               <span className="text-xs text-white/80 tabular-nums">
                 {formatDuration(elapsed)} / {formatDuration(video.duration)}
               </span>
+
               <div className="ml-auto flex items-center gap-2">
-                <button aria-label="Settings" className="text-white hover:text-white/80 transition-colors">
-                  <Settings className="h-4 w-4" />
+                {onAutoplayToggle && (
+                  <button
+                    onClick={() => onAutoplayToggle(!autoplay)}
+                    aria-label={autoplay ? "Disable autoplay" : "Enable autoplay"}
+                    aria-pressed={autoplay}
+                    className={cn(
+                      "flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-semibold transition-colors border",
+                      autoplay
+                        ? "border-white/40 bg-white/10 text-white"
+                        : "border-white/20 text-white/40",
+                    )}
+                  >
+                    Autoplay
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowShortcuts((s) => !s)}
+                  aria-label="Keyboard shortcuts"
+                  className="text-white hover:text-white/80 transition-colors"
+                >
+                  <Keyboard className="h-4 w-4" />
                 </button>
-                <button aria-label="Fullscreen" className="text-white hover:text-white/80 transition-colors">
+                <button
+                  onClick={() => {
+                    if (!document.fullscreenElement) containerRef.current?.requestFullscreen().catch(() => {});
+                    else document.exitFullscreen().catch(() => {});
+                  }}
+                  aria-label="Fullscreen"
+                  className="text-white hover:text-white/80 transition-colors"
+                >
                   <Maximize className="h-4 w-4" />
                 </button>
               </div>

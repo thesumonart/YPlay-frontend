@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -5,6 +7,7 @@ import { CheckCircle2 } from "lucide-react";
 import type { Video } from "@/types";
 import { cn, formatViews, formatDuration, timeAgo } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/shared/Avatar";
+import { VideoCardMenu } from "@/components/video/VideoCardMenu";
 
 interface VideoCardProps {
   video: Video;
@@ -19,18 +22,22 @@ export function VideoCard({ video, className }: VideoCardProps) {
       className={cn("group flex flex-col gap-3", className)}
     >
       {/* Thumbnail */}
-      <Link href={`/watch/${video.id}`} className="relative block overflow-hidden rounded-xl bg-[var(--surface-secondary)] aspect-video">
-        <Image
-          src={video.thumbnail}
-          alt={video.title}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-        />
-        <span className="absolute bottom-2 right-2 rounded-md bg-black/80 px-1.5 py-0.5 text-[11px] font-medium text-white">
-          {formatDuration(video.duration)}
-        </span>
-      </Link>
+      <div className="relative overflow-hidden rounded-xl bg-[var(--surface-secondary)] aspect-video">
+        <Link href={`/watch/${video.id}`} className="block w-full h-full">
+          <Image
+            src={video.thumbnail}
+            alt={video.title}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          <span className="absolute bottom-2 right-2 rounded-md bg-black/80 px-1.5 py-0.5 text-[11px] font-medium text-white">
+            {formatDuration(video.duration)}
+          </span>
+        </Link>
+        {/* Context menu — sits above the link */}
+        <VideoCardMenu videoId={video.id} videoTitle={video.title} />
+      </div>
 
       {/* Meta */}
       <div className="flex gap-3">

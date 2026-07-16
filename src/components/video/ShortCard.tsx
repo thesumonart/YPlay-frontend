@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -58,6 +58,25 @@ export function ShortCard({ video, active }: ShortCardProps) {
   const [disliked, setDisliked] = useState(false);
   const [progress, setProgress] = useState(0);
   const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Auto-play when this card becomes active, pause when it leaves
+  useEffect(() => {
+    if (active) {
+      setProgress(0);
+      setPlaying(true);
+      progressRef.current = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 1) { clearInterval(progressRef.current!); setPlaying(false); return 1; }
+          return prev + 1 / (video.duration * 10);
+        });
+      }, 100);
+    } else {
+      setPlaying(false);
+      setProgress(0);
+      if (progressRef.current) clearInterval(progressRef.current);
+    }
+    return () => { if (progressRef.current) clearInterval(progressRef.current); };
+  }, [active, video.duration]);
 
   const togglePlay = () => {
     setPlaying((p) => {
