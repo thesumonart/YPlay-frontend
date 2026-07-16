@@ -2,16 +2,25 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronUp, ChevronDown, Keyboard } from "lucide-react";
+import { ChevronUp, ChevronDown, Keyboard, ChevronUp as SwipeUp, ChevronDown as SwipeDown } from "lucide-react";
 import { shortVideos } from "@/data/videos";
 import { ShortCard } from "@/components/video/ShortCard";
 import { cn } from "@/lib/utils";
 
+const SWIPE_THRESHOLD = 50; // px
+
 export function ShortsView() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showHint, setShowHint] = useState(true);
+  const [swipeDelta, setSwipeDelta] = useState(0); // live drag offset for indicator
+  const [isTouch, setIsTouch] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const scrolling = useRef(false);
+  const touchStartY = useRef<number | null>(null);
+
+  // Detect touch device on mount
+  useEffect(() => {
+    setIsTouch(navigator.maxTouchPoints > 0);
+  }, []);
 
   const goTo = useCallback((index: number) => {
     const clamped = Math.max(0, Math.min(shortVideos.length - 1, index));
@@ -43,16 +52,47 @@ export function ShortsView() {
     return () => clearTimeout(t);
   }, []);
 
-  // Sync activeIndex from scroll position
+  // Sync activeIndex from native scroll
   const handleScroll = useCallback(() => {
-    if (!containerRef.current || scrolling.current) return;
+    if (!containerRef.current) return;
     const { scrollTop, clientHeight } = containerRef.current;
     const index = Math.round(scrollTop / clientHeight);
     setActiveIndex(Math.max(0, Math.min(shortVideos.length - 1, index)));
   }, []);
 
+  // Touch handlers — on the outer wrapper so they cover the full card area
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+    setSwipeDelta(0);
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (touchStartY.current === null) return;
+    const delta = touchStartY.current - e.touches[0].clientY;
+    setSwipeDelta(delta);
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (touchStartY.current === null) return;
+    const delta = swipeDelta;
+    touchStartY.current = null;
+    setSwipeDelta(0);
+    if (Math.abs(delta) >= SWIPE_THRESHOLD) {
+      goTo(activeIndex + (delta > 0 ? 1 : -1));
+    }
+  }, [swipeDelta, activeIndex, goTo]);
+
+  // Clamp indicator opacity/offset for visual feedback
+  const indicatorProgress = Math.min(Math.abs(swipeDelta) / SWIPE_THRESHOLD, 1);
+  const swipingDown = swipeDelta > 0; // swiping up = going to next
+
   return (
-    <div className="relative flex justify-center">
+    <div
+      className="relative flex justify-center"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Scroll container */}
       <div
         ref={containerRef}
@@ -83,6 +123,25 @@ export function ShortsView() {
           {activeIndex + 1} / {shortVideos.length}
         </motion.div>
       </div>
+
+      {/* Swipe direction indicator — mobile only, shows during drag */}
+      <AnimatePresence>
+        {indicatorProgress > 0.1 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: indicatorProgress, scale: 0.8 + indicatorProgress * 0.2 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.1 }}
+            className="pointer-events-none absolute left-1/2 -translate-x-1/2 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-black/60 backdrop-blur-sm md:hidden"
+            style={{ top: swipingDown ? "auto" : "30%", bottom: swipingDown ? "30%" : "auto" }}
+          >
+            {swipingDown
+              ? <SwipeDown className="h-6 w-6 text-white" />
+              : <SwipeUp className="h-6 w-6 text-white" />
+            }
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Navigation arrows — desktop */}
       <div className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 flex-col gap-2 z-40">
@@ -134,7 +193,7 @@ export function ShortsView() {
         ))}
       </div>
 
-      {/* Keyboard hint toast */}
+      {/* Hint toast — keyboard on desktop, swipe on touch */}
       <AnimatePresence>
         {showHint && (
           <motion.div
@@ -144,16 +203,23 @@ export function ShortsView() {
             transition={{ duration: 0.25 }}
             className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
           >
-            <div className="flex items-center gap-2 rounded-full bg-black/70 backdrop-blur-sm px-4 py-2 text-xs text-white/80 shadow-lg">
-              <Keyboard className="h-3.5 w-3.5 shrink-0" />
-              <span>Use</span>
-              <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">↑</kbd>
-              <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">↓</kbd>
-              <span>or</span>
-              <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">J</kbd>
-              <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">K</kbd>
-              <span>to navigate</span>
-            </div>
+            {isTouch ? (
+              <div className="flex items-center gap-2 rounded-full bg-black/70 backdrop-blur-sm px-4 py-2 text-xs text-white/80 shadow-lg whitespace-nowrap">
+                <SwipeUp className="h-3.5 w-3.5 shrink-0" />
+                <span>Swipe up or down to navigate</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 rounded-full bg-black/70 backdrop-blur-sm px-4 py-2 text-xs text-white/80 shadow-lg">
+                <Keyboard className="h-3.5 w-3.5 shrink-0" />
+                <span>Use</span>
+                <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">↑</kbd>
+                <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">↓</kbd>
+                <span>or</span>
+                <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">J</kbd>
+                <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">K</kbd>
+                <span>to navigate</span>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
