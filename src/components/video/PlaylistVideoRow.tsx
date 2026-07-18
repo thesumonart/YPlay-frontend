@@ -1,12 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
-import { Play, X, CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Play, X } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { cn, formatDuration, formatViews, timeAgo } from "@/lib/utils";
 import type { Video } from "@/types";
-import { formatViews, formatDuration, timeAgo } from "@/lib/utils";
-import { cn } from "@/lib/utils";
 
 interface PlaylistVideoRowProps {
   video: Video;
@@ -33,8 +32,8 @@ export function PlaylistVideoRow({
       className={cn(
         "group flex items-center gap-3 rounded-xl p-2 -mx-2 transition-colors cursor-pointer",
         active
-          ? "bg-[var(--primary)]/8 border border-[var(--primary)]/20"
-          : "hover:bg-[var(--surface-secondary)]"
+          ? "bg-primary/8 border border-primary/20"
+          : "hover:bg-surface-secondary",
       )}
       onClick={() => onPlay(video.id)}
     >
@@ -47,22 +46,22 @@ export function PlaylistVideoRow({
                 key={b}
                 animate={{ height: ["40%", "100%", "60%", "100%", "40%"] }}
                 transition={{ duration: 1, repeat: Infinity, delay: b * 0.15 }}
-                className="w-0.5 bg-[var(--primary)] rounded-full"
+                className="w-0.5 bg-primary rounded-full"
               />
             ))}
           </div>
         ) : (
           <>
-            <span className="text-xs font-medium text-[var(--text-secondary)] group-hover:hidden">
+            <span className="text-xs font-medium text-text-secondary group-hover:hidden">
               {index + 1}
             </span>
-            <Play className="h-3.5 w-3.5 text-[var(--text-secondary)] hidden group-hover:block fill-current" />
+            <Play className="h-3.5 w-3.5 text-text-secondary hidden group-hover:block fill-current" />
           </>
         )}
       </div>
 
       {/* Thumbnail */}
-      <div className="relative shrink-0 w-24 aspect-video rounded-lg overflow-hidden bg-[var(--surface-secondary)]">
+      <div className="relative shrink-0 w-24 aspect-video rounded-lg overflow-hidden bg-surface-secondary">
         <Image
           src={video.thumbnail}
           alt={video.title}
@@ -77,21 +76,23 @@ export function PlaylistVideoRow({
 
       {/* Info */}
       <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-        <p className={cn(
-          "text-sm font-medium line-clamp-2 leading-snug transition-colors",
-          active ? "text-[var(--primary)]" : "text-[var(--text)] group-hover:text-[var(--primary)]"
-        )}>
+        <p
+          className={cn(
+            "text-sm font-medium line-clamp-2 leading-snug transition-colors",
+            active ? "text-primary" : "text-text group-hover:text-primary",
+          )}
+        >
           {video.title}
         </p>
         <Link
           href={`/channel/${video.channel.id}`}
           onClick={(e) => e.stopPropagation()}
-          className="flex items-center gap-1 text-xs text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors w-fit"
+          className="flex items-center gap-1 text-xs text-text-secondary hover:text-text transition-colors w-fit"
         >
           {video.channel.name}
           {video.channel.verified && <CheckCircle2 className="h-3 w-3" />}
         </Link>
-        <p className="text-xs text-[var(--text-secondary)]">
+        <p className="text-xs text-text-secondary">
           {formatViews(video.views)} views · {timeAgo(video.publishedAt)}
         </p>
       </div>
@@ -99,9 +100,12 @@ export function PlaylistVideoRow({
       {/* Remove button */}
       {onRemove && (
         <button
-          onClick={(e) => { e.stopPropagation(); onRemove(video.id); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove(video.id);
+          }}
           aria-label="Remove from playlist"
-          className="shrink-0 flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-secondary)] hover:bg-[var(--border)] hover:text-[var(--text)] transition-all opacity-0 group-hover:opacity-100"
+          className="shrink-0 flex h-7 w-7 items-center justify-center rounded-lg text-text-secondary hover:bg-border hover:text-text transition-all opacity-0 group-hover:opacity-100"
         >
           <X className="h-3.5 w-3.5" />
         </button>

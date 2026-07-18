@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { mockVideos } from "@/data/videos";
+import { notFound } from "next/navigation";
 import { StudioLayout } from "@/components/studio/StudioLayout";
+import { mockVideos } from "@/data/videos";
 import { StudioVideoEditView } from "@/features/studio/StudioVideoEditView";
 
 interface Props {
@@ -17,7 +17,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const video = mockVideos.find((v) => v.id === id);
-  return { title: video ? `Edit: ${video.title} – Studio` : "Edit Video – Studio" };
+  return {
+    title: video ? `Edit: ${video.title} – Studio` : "Edit Video – Studio",
+  };
 }
 
 export default async function StudioVideoEditPage({ params }: Props) {

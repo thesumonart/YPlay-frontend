@@ -1,13 +1,17 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
-import type { Video } from "@/types";
-import { cn, formatViews, formatDuration, timeAgo } from "@/lib/utils";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/shared/Avatar";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/shared/Avatar";
 import { VideoCardMenu } from "@/components/video/VideoCardMenu";
+import { cn, formatDuration, formatViews, timeAgo } from "@/lib/utils";
+import type { Video } from "@/types";
 
 interface VideoCardProps {
   video: Video;
@@ -22,7 +26,7 @@ export function VideoCard({ video, className }: VideoCardProps) {
       className={cn("group flex flex-col gap-3", className)}
     >
       {/* Thumbnail */}
-      <div className="relative overflow-hidden rounded-xl bg-[var(--surface-secondary)] aspect-video">
+      <div className="relative overflow-hidden rounded-xl bg-surface-secondary aspect-video">
         <Link href={`/watch/${video.id}`} className="block w-full h-full">
           <Image
             src={video.thumbnail}
@@ -50,20 +54,20 @@ export function VideoCard({ video, className }: VideoCardProps) {
         <div className="flex flex-col gap-0.5 min-w-0">
           <Link
             href={`/watch/${video.id}`}
-            className="text-sm font-semibold text-[var(--text)] line-clamp-2 leading-snug hover:text-[var(--primary)] transition-colors"
+            className="text-sm font-semibold text-text line-clamp-2 leading-snug hover:text-primary transition-colors"
           >
             {video.title}
           </Link>
           <Link
             href={`/channel/${video.channel.id}`}
-            className="flex items-center gap-1 text-xs text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors"
+            className="flex items-center gap-1 text-xs text-text-secondary hover:text-text transition-colors"
           >
             {video.channel.name}
             {video.channel.verified && (
-              <CheckCircle2 className="h-3 w-3 text-[var(--text-secondary)]" />
+              <CheckCircle2 className="h-3 w-3 text-text-secondary" />
             )}
           </Link>
-          <p className="text-xs text-[var(--text-secondary)]">
+          <p className="text-xs text-text-secondary">
             {formatViews(video.views)} views · {timeAgo(video.publishedAt)}
           </p>
         </div>

@@ -1,15 +1,14 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import type { Video } from "@/types";
-import type { Comment } from "@/types";
-import { VideoPlayer } from "@/components/player/VideoPlayer";
+import { CommentSection } from "@/components/comments/CommentSection";
 import { VideoActions } from "@/components/player/VideoActions";
 import { VideoInfo } from "@/components/player/VideoInfo";
-import { CommentSection } from "@/components/comments/CommentSection";
-import { UpNextCard } from "@/components/video/UpNextCard";
+import { VideoPlayer } from "@/components/player/VideoPlayer";
 import { AutoplayCountdown } from "@/components/video/AutoplayCountdown";
+import { UpNextCard } from "@/components/video/UpNextCard";
+import type { Comment, Video } from "@/types";
 
 interface WatchViewProps {
   video: Video;

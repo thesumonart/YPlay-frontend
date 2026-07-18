@@ -1,10 +1,10 @@
-import Link from "next/link";
-import Image from "next/image";
-import { Play, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
-import type { Video } from "@/types";
-import { formatViews, formatDuration, timeAgo } from "@/lib/utils";
+import { CheckCircle2, Play } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/shared/Button";
+import { formatDuration, formatViews, timeAgo } from "@/lib/utils";
+import type { Video } from "@/types";
 
 interface FeaturedVideoProps {
   video: Video;
@@ -16,7 +16,7 @@ export function FeaturedVideo({ video }: FeaturedVideoProps) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="relative w-full overflow-hidden rounded-2xl bg-[var(--surface-secondary)] aspect-[21/9] min-h-[200px]"
+      className="relative w-full overflow-hidden rounded-2xl bg-surface-secondary aspect-[21/9] min-h-[200px]"
     >
       <Image
         src={video.thumbnail}
@@ -33,7 +33,7 @@ export function FeaturedVideo({ video }: FeaturedVideoProps) {
       <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
         <div className="flex flex-col gap-3 max-w-2xl">
           <div className="flex items-center gap-2 text-white/70 text-xs">
-            <span className="rounded-md bg-[var(--primary)] px-2 py-0.5 text-white text-[11px] font-semibold uppercase tracking-wide">
+            <span className="rounded-md bg-primary px-2 py-0.5 text-white text-[11px] font-semibold uppercase tracking-wide">
               Featured
             </span>
             <span>{video.category}</span>
@@ -48,7 +48,9 @@ export function FeaturedVideo({ video }: FeaturedVideoProps) {
           <div className="flex items-center gap-2 text-white/70 text-sm">
             <span className="flex items-center gap-1">
               {video.channel.name}
-              {video.channel.verified && <CheckCircle2 className="h-3.5 w-3.5" />}
+              {video.channel.verified && (
+                <CheckCircle2 className="h-3.5 w-3.5" />
+              )}
             </span>
             <span>·</span>
             <span>{formatViews(video.views)} views</span>

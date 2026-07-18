@@ -1,26 +1,26 @@
-"use client";
+﻿"use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { AnimatePresence, motion } from "framer-motion";
 import {
+  Eye,
+  MessageSquare,
+  MoreHorizontal,
+  Pencil,
   Search,
   SlidersHorizontal,
-  Upload,
-  Trash2,
-  X,
-  Eye,
   ThumbsUp,
-  MessageSquare,
-  Pencil,
-  MoreHorizontal,
+  Trash2,
+  Upload,
+  X,
 } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { mockVideos } from "@/data/videos";
+import { useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/shared/Button";
-import { cn, formatViews, formatDuration, timeAgo } from "@/lib/utils";
+import { mockVideos } from "@/data/videos";
+import { cn, formatDuration, formatViews, timeAgo } from "@/lib/utils";
 
 type StatusFilter = "all" | "published" | "draft" | "private";
 type SortKey = "date" | "views" | "likes" | "title";
@@ -45,15 +45,15 @@ const STATUS_CONFIG: Record<
 > = {
   published: {
     label: "Published",
-    className: "text-[var(--success)] bg-[var(--success)]/10",
+    className: "text-success bg-success/10",
   },
   draft: {
     label: "Draft",
-    className: "text-[var(--warning)] bg-[var(--warning)]/10",
+    className: "text-warning bg-warning/10",
   },
   private: {
     label: "Private",
-    className: "text-[var(--text-secondary)] bg-[var(--surface-secondary)]",
+    className: "text-text-secondary bg-surface-secondary",
   },
 };
 
@@ -88,7 +88,7 @@ export function StudioContentView() {
       result = result.filter(
         (v) =>
           v.title.toLowerCase().includes(q) ||
-          v.description.toLowerCase().includes(q)
+          v.description.toLowerCase().includes(q),
       );
     }
 
@@ -100,8 +100,7 @@ export function StudioContentView() {
       let cmp = 0;
       if (sortKey === "date")
         cmp =
-          new Date(b.publishedAt).getTime() -
-          new Date(a.publishedAt).getTime();
+          new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
       else if (sortKey === "views") cmp = b.views - a.views;
       else if (sortKey === "likes") cmp = b.likes - a.likes;
       else if (sortKey === "title") cmp = a.title.localeCompare(b.title);
@@ -113,9 +112,7 @@ export function StudioContentView() {
     filtered.length > 0 && filtered.every((v) => selected.has(v.id));
 
   const toggleAll = useCallback(() => {
-    setSelected(
-      allSelected ? new Set() : new Set(filtered.map((v) => v.id))
-    );
+    setSelected(allSelected ? new Set() : new Set(filtered.map((v) => v.id)));
   }, [allSelected, filtered]);
 
   const toggleOne = useCallback((id: string) => {
@@ -144,8 +141,8 @@ export function StudioContentView() {
       {/* Header */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-xl font-bold text-[var(--text)]">Content</h1>
-          <p className="text-sm text-[var(--text-secondary)] mt-0.5">
+          <h1 className="text-xl font-bold text-text">Content</h1>
+          <p className="text-sm text-text-secondary mt-0.5">
             {myVideos.length} videos
           </p>
         </div>
@@ -159,7 +156,7 @@ export function StudioContentView() {
 
       {/* Status tabs */}
       <div
-        className="flex gap-1 border-b border-[var(--border)]"
+        className="flex gap-1 border-b border-border"
         role="tablist"
       >
         {STATUS_TABS.map(({ id, label }) => (
@@ -174,8 +171,8 @@ export function StudioContentView() {
             className={cn(
               "relative flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none shrink-0",
               statusFilter === id
-                ? "text-[var(--text)]"
-                : "text-[var(--text-secondary)] hover:text-[var(--text)]"
+                ? "text-text"
+                : "text-text-secondary hover:text-text",
             )}
           >
             {label}
@@ -183,8 +180,8 @@ export function StudioContentView() {
               className={cn(
                 "text-[10px] font-semibold tabular-nums",
                 statusFilter === id
-                  ? "text-[var(--text-secondary)]"
-                  : "text-[var(--border)]"
+                  ? "text-text-secondary"
+                  : "text-border",
               )}
             >
               {statusCounts[id]}
@@ -192,7 +189,7 @@ export function StudioContentView() {
             {statusFilter === id && (
               <motion.div
                 layoutId="content-tab-indicator"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--primary)] rounded-full"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
                 transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
               />
             )}
@@ -203,23 +200,23 @@ export function StudioContentView() {
       {/* Search + sort */}
       <div className="flex items-center gap-2 flex-wrap">
         <div className="relative flex-1 min-w-48">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-secondary)] pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary pointer-events-none" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search videos..."
             aria-label="Search videos"
             className={cn(
-              "h-9 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)]",
-              "pl-9 pr-8 text-sm text-[var(--text)] placeholder:text-[var(--text-secondary)]",
-              "focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all"
+              "h-9 w-full rounded-lg border border-border bg-surface",
+              "pl-9 pr-8 text-sm text-text placeholder:text-text-secondary",
+              "focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all",
             )}
           />
           {query && (
             <button
               onClick={() => setQuery("")}
               aria-label="Clear search"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text transition-colors"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -230,7 +227,7 @@ export function StudioContentView() {
           variant="outline"
           size="sm"
           onClick={() => setShowSort((o) => !o)}
-          className={cn("gap-1.5", showSort && "bg-[var(--surface-secondary)]")}
+          className={cn("gap-1.5", showSort && "bg-surface-secondary")}
         >
           <SlidersHorizontal className="h-3.5 w-3.5" />
           Sort
@@ -248,7 +245,7 @@ export function StudioContentView() {
             className="overflow-hidden"
           >
             <div className="flex items-center gap-2 flex-wrap pb-1">
-              <span className="text-xs text-[var(--text-secondary)] font-medium">
+              <span className="text-xs text-text-secondary font-medium">
                 Sort by:
               </span>
               {SORT_OPTIONS.map(({ value, label }) => (
@@ -264,13 +261,13 @@ export function StudioContentView() {
                   className={cn(
                     "flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors",
                     sortKey === value
-                      ? "bg-[var(--surface-secondary)] text-[var(--text)]"
-                      : "text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--surface-secondary)]"
+                      ? "bg-surface-secondary text-text"
+                      : "text-text-secondary hover:text-text hover:bg-surface-secondary",
                   )}
                 >
                   {label}
                   {sortKey === value && (
-                    <span className="text-[var(--primary)]">
+                    <span className="text-primary">
                       {sortAsc ? "↑" : "↓"}
                     </span>
                   )}
@@ -289,16 +286,16 @@ export function StudioContentView() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-secondary)] px-4 py-2.5"
+            className="flex items-center gap-3 rounded-xl border border-border bg-surface-secondary px-4 py-2.5"
           >
-            <span className="text-sm font-medium text-[var(--text)]">
+            <span className="text-sm font-medium text-text">
               {selected.size} selected
             </span>
             <div className="flex items-center gap-2 ml-auto">
               <Button
                 variant="ghost"
                 size="sm"
-                className="gap-1.5 text-[var(--danger)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10"
+                className="gap-1.5 text-danger hover:text-danger hover:bg-danger/10"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 Delete
@@ -307,7 +304,7 @@ export function StudioContentView() {
                 variant="ghost"
                 size="sm"
                 onClick={clearSelection}
-                className="text-[var(--text-secondary)]"
+                className="text-text-secondary"
               >
                 <X className="h-3.5 w-3.5" />
                 Cancel
@@ -327,13 +324,13 @@ export function StudioContentView() {
             exit={{ opacity: 0 }}
             className="flex flex-col items-center justify-center py-24 gap-3 text-center"
           >
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--surface-secondary)]">
-              <Search className="h-6 w-6 text-[var(--text-secondary)]" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-secondary">
+              <Search className="h-6 w-6 text-text-secondary" />
             </div>
-            <p className="text-base font-semibold text-[var(--text)]">
+            <p className="text-base font-semibold text-text">
               No videos found
             </p>
-            <p className="text-sm text-[var(--text-secondary)]">
+            <p className="text-sm text-text-secondary">
               Try a different search or filter
             </p>
           </motion.div>
@@ -343,37 +340,37 @@ export function StudioContentView() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="rounded-xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden"
+            className="rounded-xl border border-border bg-surface overflow-hidden"
           >
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[var(--border)] bg-[var(--surface-secondary)]">
+                  <tr className="border-b border-border bg-surface-secondary">
                     <th className="py-3 pl-4 pr-2 w-10">
                       <input
                         type="checkbox"
                         checked={allSelected}
                         onChange={toggleAll}
                         aria-label="Select all videos"
-                        className="h-4 w-4 rounded border-[var(--border)] accent-[var(--primary)] cursor-pointer"
+                        className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
                       />
                     </th>
-                    <th className="py-3 pr-3 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
+                    <th className="py-3 pr-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
                       Video
                     </th>
-                    <th className="py-3 px-3 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider hidden sm:table-cell">
+                    <th className="py-3 px-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider hidden sm:table-cell">
                       Status
                     </th>
-                    <th className="py-3 px-3 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider hidden lg:table-cell">
+                    <th className="py-3 px-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider hidden lg:table-cell">
                       Date
                     </th>
-                    <th className="py-3 px-3 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider hidden md:table-cell">
+                    <th className="py-3 px-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider hidden md:table-cell">
                       Views
                     </th>
-                    <th className="py-3 px-3 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider hidden md:table-cell">
+                    <th className="py-3 px-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider hidden md:table-cell">
                       Likes
                     </th>
-                    <th className="py-3 px-3 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider hidden lg:table-cell">
+                    <th className="py-3 px-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider hidden lg:table-cell">
                       Comments
                     </th>
                     <th className="py-3 pl-3 pr-4" />
@@ -391,10 +388,10 @@ export function StudioContentView() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.2, delay: i * 0.03 }}
                         className={cn(
-                          "group border-b border-[var(--border)] last:border-0 transition-colors",
+                          "group border-b border-border last:border-0 transition-colors",
                           isSelected
-                            ? "bg-[var(--primary)]/5"
-                            : "hover:bg-[var(--surface-secondary)]"
+                            ? "bg-primary/5"
+                            : "hover:bg-surface-secondary",
                         )}
                       >
                         {/* Checkbox */}
@@ -404,7 +401,7 @@ export function StudioContentView() {
                             checked={isSelected}
                             onChange={() => toggleOne(video.id)}
                             aria-label={`Select ${video.title}`}
-                            className="h-4 w-4 rounded border-[var(--border)] accent-[var(--primary)] cursor-pointer"
+                            className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
                           />
                         </td>
 
@@ -413,7 +410,7 @@ export function StudioContentView() {
                           <div className="flex items-center gap-3">
                             <Link
                               href={`/watch/${video.id}`}
-                              className="relative shrink-0 w-24 aspect-video rounded-lg overflow-hidden bg-[var(--surface-secondary)]"
+                              className="relative shrink-0 w-24 aspect-video rounded-lg overflow-hidden bg-surface-secondary"
                             >
                               <Image
                                 src={video.thumbnail}
@@ -429,11 +426,11 @@ export function StudioContentView() {
                             <div className="flex flex-col gap-1 min-w-0">
                               <Link
                                 href={`/watch/${video.id}`}
-                                className="text-sm font-medium text-[var(--text)] line-clamp-2 leading-snug hover:text-[var(--primary)] transition-colors"
+                                className="text-sm font-medium text-text line-clamp-2 leading-snug hover:text-primary transition-colors"
                               >
                                 {video.title}
                               </Link>
-                              <p className="text-xs text-[var(--text-secondary)] line-clamp-1 hidden md:block">
+                              <p className="text-xs text-text-secondary line-clamp-1 hidden md:block">
                                 {video.description}
                               </p>
                             </div>
@@ -445,7 +442,7 @@ export function StudioContentView() {
                           <span
                             className={cn(
                               "rounded-md px-2 py-1 text-xs font-medium",
-                              className
+                              className,
                             )}
                           >
                             {label}
@@ -454,14 +451,14 @@ export function StudioContentView() {
 
                         {/* Date */}
                         <td className="py-3 px-3 hidden lg:table-cell">
-                          <span className="text-xs text-[var(--text-secondary)]">
+                          <span className="text-xs text-text-secondary">
                             {timeAgo(video.publishedAt)}
                           </span>
                         </td>
 
                         {/* Views */}
                         <td className="py-3 px-3 hidden md:table-cell">
-                          <span className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
+                          <span className="flex items-center gap-1.5 text-xs text-text-secondary">
                             <Eye className="h-3.5 w-3.5" />
                             {formatViews(video.views)}
                           </span>
@@ -469,7 +466,7 @@ export function StudioContentView() {
 
                         {/* Likes */}
                         <td className="py-3 px-3 hidden md:table-cell">
-                          <span className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
+                          <span className="flex items-center gap-1.5 text-xs text-text-secondary">
                             <ThumbsUp className="h-3.5 w-3.5" />
                             {formatViews(video.likes)}
                           </span>
@@ -477,7 +474,7 @@ export function StudioContentView() {
 
                         {/* Comments */}
                         <td className="py-3 px-3 hidden lg:table-cell">
-                          <span className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
+                          <span className="flex items-center gap-1.5 text-xs text-text-secondary">
                             <MessageSquare className="h-3.5 w-3.5" />
                             {Math.floor(video.likes * 0.04).toLocaleString()}
                           </span>
@@ -489,7 +486,7 @@ export function StudioContentView() {
                             <DropdownMenu.Trigger asChild>
                               <button
                                 aria-label="Video options"
-                                className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-secondary)] hover:bg-[var(--border)] hover:text-[var(--text)] transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                className="flex h-8 w-8 items-center justify-center rounded-lg text-text-secondary hover:bg-border hover:text-text transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
                               >
                                 <MoreHorizontal className="h-4 w-4" />
                               </button>
@@ -498,7 +495,7 @@ export function StudioContentView() {
                               <DropdownMenu.Content
                                 align="end"
                                 sideOffset={4}
-                                className="z-50 min-w-36 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 shadow-lg animate-in fade-in-0 zoom-in-95"
+                                className="z-50 min-w-36 overflow-hidden rounded-xl border border-border bg-surface p-1 shadow-lg animate-in fade-in-0 zoom-in-95"
                               >
                                 {[
                                   {
@@ -506,7 +503,7 @@ export function StudioContentView() {
                                     label: "Edit",
                                     action: () =>
                                       router.push(
-                                        `/studio/content/${video.id}`
+                                        `/studio/content/${video.id}`,
                                       ),
                                     danger: false,
                                   },
@@ -536,14 +533,14 @@ export function StudioContentView() {
                                       className={cn(
                                         "flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm outline-none transition-colors",
                                         danger
-                                          ? "text-[var(--danger)] focus:bg-[var(--danger)]/10"
-                                          : "text-[var(--text)] focus:bg-[var(--surface-secondary)]"
+                                          ? "text-danger focus:bg-danger/10"
+                                          : "text-text focus:bg-surface-secondary",
                                       )}
                                     >
                                       <Icon className="h-3.5 w-3.5" />
                                       {itemLabel}
                                     </DropdownMenu.Item>
-                                  )
+                                  ),
                                 )}
                               </DropdownMenu.Content>
                             </DropdownMenu.Portal>
@@ -557,20 +554,20 @@ export function StudioContentView() {
             </div>
 
             {/* Table footer */}
-            <div className="border-t border-[var(--border)] px-4 py-3 flex items-center justify-between">
-              <p className="text-xs text-[var(--text-secondary)]">
+            <div className="border-t border-border px-4 py-3 flex items-center justify-between">
+              <p className="text-xs text-text-secondary">
                 Showing{" "}
-                <span className="font-medium text-[var(--text)]">
+                <span className="font-medium text-text">
                   {filtered.length}
                 </span>{" "}
                 of{" "}
-                <span className="font-medium text-[var(--text)]">
+                <span className="font-medium text-text">
                   {myVideos.length}
                 </span>{" "}
                 videos
               </p>
               {selected.size > 0 && (
-                <p className="text-xs text-[var(--primary)] font-medium">
+                <p className="text-xs text-primary font-medium">
                   {selected.size} selected
                 </p>
               )}

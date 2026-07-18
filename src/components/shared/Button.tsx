@@ -1,20 +1,21 @@
 "use client";
 
-import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)]",
-        secondary: "bg-[var(--surface-secondary)] text-[var(--text)] hover:bg-[var(--border)]",
-        ghost: "text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text)]",
-        outline: "border border-[var(--border)] bg-transparent text-[var(--text)] hover:bg-[var(--surface-secondary)]",
-        destructive: "bg-[var(--danger)] text-white hover:opacity-90",
+        default: "bg-primary text-white hover:bg-primary-hover",
+        secondary: "bg-surface-secondary text-text hover:bg-border",
+        ghost: "text-text-secondary hover:bg-surface-secondary hover:text-text",
+        outline:
+          "border border-border bg-transparent text-text hover:bg-surface-secondary",
+        destructive: "bg-danger text-white hover:opacity-90",
       },
       size: {
         sm: "h-8 px-3 text-xs",
@@ -28,7 +29,7 @@ const buttonVariants = cva(
       variant: "default",
       size: "md",
     },
-  }
+  },
 );
 
 export interface ButtonProps
@@ -47,7 +48,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       />
     );
-  }
+  },
 );
 Button.displayName = "Button";
 

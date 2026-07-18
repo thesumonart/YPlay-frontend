@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Bell, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Bell } from "lucide-react";
-import type { Video } from "@/types";
-import { formatViews, timeAgo } from "@/lib/utils";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/shared/Avatar";
+import { useState } from "react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/shared/Avatar";
 import { Button } from "@/components/shared/Button";
+import { formatViews, timeAgo } from "@/lib/utils";
+import type { Video } from "@/types";
 
 interface VideoInfoProps {
   video: Video;
@@ -20,7 +24,7 @@ export function VideoInfo({ video }: VideoInfoProps) {
   return (
     <div className="flex flex-col gap-4">
       {/* Title */}
-      <h1 className="text-lg md:text-xl font-bold text-[var(--text)] leading-snug">
+      <h1 className="text-lg md:text-xl font-bold text-text leading-snug">
         {video.title}
       </h1>
 
@@ -30,21 +34,24 @@ export function VideoInfo({ video }: VideoInfoProps) {
         <div className="flex items-center gap-3">
           <Link href={`/channel/${video.channel.id}`}>
             <Avatar className="h-10 w-10">
-              <AvatarImage src={video.channel.avatar} alt={video.channel.name} />
+              <AvatarImage
+                src={video.channel.avatar}
+                alt={video.channel.name}
+              />
               <AvatarFallback>{video.channel.name[0]}</AvatarFallback>
             </Avatar>
           </Link>
           <div className="flex flex-col">
             <Link
               href={`/channel/${video.channel.id}`}
-              className="flex items-center gap-1 text-sm font-semibold text-[var(--text)] hover:text-[var(--primary)] transition-colors"
+              className="flex items-center gap-1 text-sm font-semibold text-text hover:text-primary transition-colors"
             >
               {video.channel.name}
               {video.channel.verified && (
-                <CheckCircle2 className="h-3.5 w-3.5 text-[var(--text-secondary)]" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-text-secondary" />
               )}
             </Link>
-            <span className="text-xs text-[var(--text-secondary)]">
+            <span className="text-xs text-text-secondary">
               {formatViews(video.channel.subscribers)} subscribers
             </span>
           </div>
@@ -65,13 +72,13 @@ export function VideoInfo({ video }: VideoInfoProps) {
         </div>
 
         {/* View count + date */}
-        <p className="text-sm text-[var(--text-secondary)]">
+        <p className="text-sm text-text-secondary">
           {formatViews(video.views)} views · {timeAgo(video.publishedAt)}
         </p>
       </div>
 
       {/* Description */}
-      <div className="rounded-xl bg-[var(--surface-secondary)] p-4">
+      <div className="rounded-xl bg-surface-secondary p-4">
         <AnimatePresence initial={false}>
           <motion.div
             key={expanded ? "expanded" : "collapsed"}
@@ -79,7 +86,7 @@ export function VideoInfo({ video }: VideoInfoProps) {
             animate={{ height: "auto" }}
             className={expanded ? "" : "line-clamp-3"}
           >
-            <p className="text-sm text-[var(--text)] leading-relaxed whitespace-pre-line">
+            <p className="text-sm text-text leading-relaxed whitespace-pre-line">
               {video.description}
             </p>
           </motion.div>
@@ -95,7 +102,7 @@ export function VideoInfo({ video }: VideoInfoProps) {
             {video.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-md bg-[var(--border)] px-2.5 py-1 text-xs text-[var(--text-secondary)] font-medium"
+                className="rounded-md bg-border px-2.5 py-1 text-xs text-text-secondary font-medium"
               >
                 #{tag}
               </span>
@@ -105,7 +112,7 @@ export function VideoInfo({ video }: VideoInfoProps) {
 
         <button
           onClick={() => setExpanded((e) => !e)}
-          className="mt-2 text-xs font-semibold text-[var(--text)] hover:text-[var(--primary)] transition-colors"
+          className="mt-2 text-xs font-semibold text-text hover:text-primary transition-colors"
         >
           {expanded ? "Show less" : "Show more"}
         </button>

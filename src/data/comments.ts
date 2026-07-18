@@ -26,7 +26,8 @@ export const mockComments: Comment[] = [
         id: "c1r2",
         videoId: "v1",
         author: mockUsers[3],
-        content: "Agreed! I've been looking for something like this for months.",
+        content:
+          "Agreed! I've been looking for something like this for months.",
         likes: 89,
         publishedAt: "2025-05-10T14:00:00Z",
       },
@@ -63,7 +64,8 @@ export const mockComments: Comment[] = [
         id: "c4r1",
         videoId: "v1",
         author: mockUsers[1],
-        content: "Same here. The compound component pattern section alone is worth the watch.",
+        content:
+          "Same here. The compound component pattern section alone is worth the watch.",
         likes: 67,
         publishedAt: "2025-05-13T11:00:00Z",
       },
@@ -163,7 +165,8 @@ export const mockComments: Comment[] = [
         id: "c11r1",
         videoId: "v8",
         author: mockUsers[3],
-        content: "The build speed difference is insane. My CI went from 45s to 8s.",
+        content:
+          "The build speed difference is insane. My CI went from 45s to 8s.",
         likes: 345,
         publishedAt: "2025-06-09T11:30:00Z",
       },

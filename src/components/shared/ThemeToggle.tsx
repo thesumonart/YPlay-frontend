@@ -9,7 +9,10 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <Tooltip content={theme === "dark" ? "Light mode" : "Dark mode"} side="bottom">
+    <Tooltip
+      content={theme === "dark" ? "Light mode" : "Dark mode"}
+      side="bottom"
+    >
       <Button
         variant="ghost"
         size="icon"

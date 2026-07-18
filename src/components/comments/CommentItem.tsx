@@ -1,12 +1,15 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, ChevronUp, Pin, ThumbsUp } from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ThumbsUp, Pin, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/shared/Avatar";
+import { cn, formatViews, timeAgo } from "@/lib/utils";
 import type { Comment } from "@/types";
-import { formatViews, timeAgo } from "@/lib/utils";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/shared/Avatar";
-import { cn } from "@/lib/utils";
 
 interface CommentItemProps {
   comment: Comment;
@@ -27,16 +30,20 @@ export function CommentItem({ comment, isReply = false }: CommentItemProps) {
 
       <div className="flex flex-col gap-1.5 flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm font-semibold text-[var(--text)]">{comment.author.name}</span>
+          <span className="text-sm font-semibold text-text">
+            {comment.author.name}
+          </span>
           {comment.isPinned && (
-            <span className="flex items-center gap-1 text-[11px] text-[var(--text-secondary)]">
+            <span className="flex items-center gap-1 text-[11px] text-text-secondary">
               <Pin className="h-3 w-3" /> Pinned
             </span>
           )}
-          <span className="text-xs text-[var(--text-secondary)]">{timeAgo(comment.publishedAt)}</span>
+          <span className="text-xs text-text-secondary">
+            {timeAgo(comment.publishedAt)}
+          </span>
         </div>
 
-        <p className="text-sm text-[var(--text)] leading-relaxed">{comment.content}</p>
+        <p className="text-sm text-text leading-relaxed">{comment.content}</p>
 
         <div className="flex items-center gap-3 mt-0.5">
           <button
@@ -45,7 +52,7 @@ export function CommentItem({ comment, isReply = false }: CommentItemProps) {
             aria-pressed={liked}
             className={cn(
               "flex items-center gap-1.5 text-xs transition-colors",
-              liked ? "text-[var(--primary)]" : "text-[var(--text-secondary)] hover:text-[var(--text)]"
+              liked ? "text-primary" : "text-text-secondary hover:text-text",
             )}
           >
             <ThumbsUp className="h-3.5 w-3.5" />
@@ -53,7 +60,7 @@ export function CommentItem({ comment, isReply = false }: CommentItemProps) {
           </button>
 
           {!isReply && (
-            <button className="text-xs text-[var(--text-secondary)] hover:text-[var(--text)] font-medium transition-colors">
+            <button className="text-xs text-text-secondary hover:text-text font-medium transition-colors">
               Reply
             </button>
           )}
@@ -64,10 +71,15 @@ export function CommentItem({ comment, isReply = false }: CommentItemProps) {
           <div>
             <button
               onClick={() => setShowReplies((s) => !s)}
-              className="flex items-center gap-1.5 text-xs font-semibold text-[var(--secondary)] hover:text-[var(--primary)] transition-colors mt-1"
+              className="flex items-center gap-1.5 text-xs font-semibold text-secondary hover:text-primary transition-colors mt-1"
             >
-              {showReplies ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-              {comment.replies.length} {comment.replies.length === 1 ? "reply" : "replies"}
+              {showReplies ? (
+                <ChevronUp className="h-3.5 w-3.5" />
+              ) : (
+                <ChevronDown className="h-3.5 w-3.5" />
+              )}
+              {comment.replies.length}{" "}
+              {comment.replies.length === 1 ? "reply" : "replies"}
             </button>
 
             <AnimatePresence>

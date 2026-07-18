@@ -5,7 +5,8 @@ export const mockVideos: Video[] = [
   {
     id: "v1",
     title: "Building a Design System from Scratch in 2025",
-    description: "A deep dive into creating scalable, token-based design systems using modern tooling.",
+    description:
+      "A deep dive into creating scalable, token-based design systems using modern tooling.",
     thumbnail: "https://picsum.photos/seed/v1/640/360",
     duration: 3842,
     views: 1_240_000,
@@ -21,7 +22,8 @@ export const mockVideos: Video[] = [
   {
     id: "v2",
     title: "The Future of AI in Creative Work",
-    description: "How generative AI is reshaping the creative industry and what it means for designers.",
+    description:
+      "How generative AI is reshaping the creative industry and what it means for designers.",
     thumbnail: "https://picsum.photos/seed/v2/640/360",
     duration: 2710,
     views: 3_800_000,
@@ -37,7 +39,8 @@ export const mockVideos: Video[] = [
   {
     id: "v3",
     title: "Elden Ring DLC – Every Secret Location Found",
-    description: "Complete walkthrough of all hidden areas in the Shadow of the Erdtree expansion.",
+    description:
+      "Complete walkthrough of all hidden areas in the Shadow of the Erdtree expansion.",
     thumbnail: "https://picsum.photos/seed/v3/640/360",
     duration: 5420,
     views: 8_900_000,
@@ -52,7 +55,8 @@ export const mockVideos: Video[] = [
   {
     id: "v4",
     title: "Quantum Computing Explained Simply",
-    description: "Breaking down qubits, superposition, and entanglement for everyday people.",
+    description:
+      "Breaking down qubits, superposition, and entanglement for everyday people.",
     thumbnail: "https://picsum.photos/seed/v4/640/360",
     duration: 1890,
     views: 560_000,
@@ -67,7 +71,8 @@ export const mockVideos: Video[] = [
   {
     id: "v5",
     title: "Lo-Fi Hip Hop Beat Making – Full Session",
-    description: "Watch a full beat-making session from scratch using only analog gear.",
+    description:
+      "Watch a full beat-making session from scratch using only analog gear.",
     thumbnail: "https://picsum.photos/seed/v5/640/360",
     duration: 4230,
     views: 2_100_000,
@@ -82,7 +87,8 @@ export const mockVideos: Video[] = [
   {
     id: "v6",
     title: "Next.js 16 App Router – Complete Guide",
-    description: "Everything you need to know about the new App Router in Next.js 16.",
+    description:
+      "Everything you need to know about the new App Router in Next.js 16.",
     thumbnail: "https://picsum.photos/seed/v6/640/360",
     duration: 6100,
     views: 980_000,
@@ -97,7 +103,8 @@ export const mockVideos: Video[] = [
   {
     id: "v7",
     title: "Cinematic Tokyo – 4K Travel Film",
-    description: "A cinematic journey through the streets, temples, and neon lights of Tokyo.",
+    description:
+      "A cinematic journey through the streets, temples, and neon lights of Tokyo.",
     thumbnail: "https://picsum.photos/seed/v7/640/360",
     duration: 720,
     views: 4_500_000,
@@ -112,7 +119,8 @@ export const mockVideos: Video[] = [
   {
     id: "v8",
     title: "Tailwind CSS v4 – What's New",
-    description: "A complete overview of all the new features and breaking changes in Tailwind CSS v4.",
+    description:
+      "A complete overview of all the new features and breaking changes in Tailwind CSS v4.",
     thumbnail: "https://picsum.photos/seed/v8/640/360",
     duration: 1540,
     views: 720_000,
@@ -127,7 +135,8 @@ export const mockVideos: Video[] = [
   {
     id: "v9",
     title: "Speed Run – Dark Souls in Under 30 Minutes",
-    description: "World record attempt at completing Dark Souls with no glitches.",
+    description:
+      "World record attempt at completing Dark Souls with no glitches.",
     thumbnail: "https://picsum.photos/seed/v9/640/360",
     duration: 1780,
     views: 12_000_000,
@@ -142,7 +151,8 @@ export const mockVideos: Video[] = [
   {
     id: "v10",
     title: "How Black Holes Actually Work",
-    description: "The physics of black holes, event horizons, and Hawking radiation explained.",
+    description:
+      "The physics of black holes, event horizons, and Hawking radiation explained.",
     thumbnail: "https://picsum.photos/seed/v10/640/360",
     duration: 2340,
     views: 890_000,
@@ -157,7 +167,8 @@ export const mockVideos: Video[] = [
   {
     id: "v11",
     title: "Mixing Masterclass – Vocals in the Mix",
-    description: "Professional techniques for getting vocals to sit perfectly in any mix.",
+    description:
+      "Professional techniques for getting vocals to sit perfectly in any mix.",
     thumbnail: "https://picsum.photos/seed/v11/640/360",
     duration: 3600,
     views: 1_400_000,
@@ -172,7 +183,8 @@ export const mockVideos: Video[] = [
   {
     id: "v12",
     title: "Framer Motion – Advanced Animations",
-    description: "Build complex, physics-based animations in React using Framer Motion.",
+    description:
+      "Build complex, physics-based animations in React using Framer Motion.",
     thumbnail: "https://picsum.photos/seed/v12/640/360",
     duration: 2890,
     views: 430_000,

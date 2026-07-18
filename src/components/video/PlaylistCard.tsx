@@ -1,8 +1,8 @@
-import Link from "next/link";
-import Image from "next/image";
 import { ListVideo, Lock } from "lucide-react";
-import type { Playlist } from "@/types";
+import Image from "next/image";
+import Link from "next/link";
 import { timeAgo } from "@/lib/utils";
+import type { Playlist } from "@/types";
 
 interface PlaylistCardProps {
   playlist: Playlist;
@@ -10,9 +10,12 @@ interface PlaylistCardProps {
 
 export function PlaylistCard({ playlist }: PlaylistCardProps) {
   return (
-    <Link href={`/playlist/${playlist.id}`} className="group flex flex-col gap-3">
+    <Link
+      href={`/playlist/${playlist.id}`}
+      className="group flex flex-col gap-3"
+    >
       {/* Thumbnail stack */}
-      <div className="relative aspect-video rounded-xl overflow-hidden bg-[var(--surface-secondary)]">
+      <div className="relative aspect-video rounded-xl overflow-hidden bg-surface-secondary">
         <Image
           src={playlist.thumbnail}
           alt={playlist.title}
@@ -23,7 +26,9 @@ export function PlaylistCard({ playlist }: PlaylistCardProps) {
         {/* Overlay with count */}
         <div className="absolute inset-y-0 right-0 w-1/3 bg-black/70 flex flex-col items-center justify-center gap-1">
           <ListVideo className="h-5 w-5 text-white" />
-          <span className="text-sm font-bold text-white">{playlist.videos.length}</span>
+          <span className="text-sm font-bold text-white">
+            {playlist.videos.length}
+          </span>
         </div>
         {playlist.visibility === "private" && (
           <div className="absolute top-2 left-2 flex items-center gap-1 rounded-md bg-black/70 px-1.5 py-0.5">
@@ -35,10 +40,10 @@ export function PlaylistCard({ playlist }: PlaylistCardProps) {
 
       {/* Info */}
       <div className="flex flex-col gap-0.5">
-        <p className="text-sm font-semibold text-[var(--text)] line-clamp-2 leading-snug group-hover:text-[var(--primary)] transition-colors">
+        <p className="text-sm font-semibold text-text line-clamp-2 leading-snug group-hover:text-primary transition-colors">
           {playlist.title}
         </p>
-        <p className="text-xs text-[var(--text-secondary)]">
+        <p className="text-xs text-text-secondary">
           {playlist.owner.name} · Updated {timeAgo(playlist.updatedAt)}
         </p>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const TooltipProvider = TooltipPrimitive.Provider;
@@ -16,8 +16,8 @@ const TooltipContent = React.forwardRef<
     ref={ref}
     sideOffset={sideOffset}
     className={cn(
-      "z-50 overflow-hidden rounded-lg bg-[var(--surface)] border border-[var(--border)] px-3 py-1.5 text-xs text-[var(--text)] shadow-md animate-in fade-in-0 zoom-in-95",
-      className
+      "z-50 overflow-hidden rounded-lg bg-surface border border-border px-3 py-1.5 text-xs text-text shadow-md animate-in fade-in-0 zoom-in-95",
+      className,
     )}
     {...props}
   />
@@ -41,4 +41,10 @@ function Tooltip({ children, content, side = "bottom" }: TooltipProps) {
   );
 }
 
-export { Tooltip, TooltipProvider, TooltipRoot, TooltipTrigger, TooltipContent };
+export {
+  Tooltip,
+  TooltipProvider,
+  TooltipRoot,
+  TooltipTrigger,
+  TooltipContent,
+};

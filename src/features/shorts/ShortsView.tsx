@@ -1,10 +1,16 @@
-"use client";
+﻿"use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronUp, ChevronDown, Keyboard, ChevronUp as SwipeUp, ChevronDown as SwipeDown } from "lucide-react";
-import { shortVideos } from "@/data/videos";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ChevronDown,
+  ChevronUp,
+  Keyboard,
+  ChevronDown as SwipeDown,
+  ChevronUp as SwipeUp,
+} from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ShortCard } from "@/components/video/ShortCard";
+import { shortVideos } from "@/data/videos";
 import { cn } from "@/lib/utils";
 
 const SWIPE_THRESHOLD = 50; // px
@@ -25,7 +31,9 @@ export function ShortsView() {
   const goTo = useCallback((index: number) => {
     const clamped = Math.max(0, Math.min(shortVideos.length - 1, index));
     setActiveIndex(clamped);
-    const el = containerRef.current?.children[clamped] as HTMLElement | undefined;
+    const el = containerRef.current?.children[clamped] as
+      | HTMLElement
+      | undefined;
     el?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
@@ -129,16 +137,23 @@ export function ShortsView() {
         {indicatorProgress > 0.1 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: indicatorProgress, scale: 0.8 + indicatorProgress * 0.2 }}
+            animate={{
+              opacity: indicatorProgress,
+              scale: 0.8 + indicatorProgress * 0.2,
+            }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.1 }}
             className="pointer-events-none absolute left-1/2 -translate-x-1/2 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-black/60 backdrop-blur-sm md:hidden"
-            style={{ top: swipingDown ? "auto" : "30%", bottom: swipingDown ? "30%" : "auto" }}
+            style={{
+              top: swipingDown ? "auto" : "30%",
+              bottom: swipingDown ? "30%" : "auto",
+            }}
           >
-            {swipingDown
-              ? <SwipeDown className="h-6 w-6 text-white" />
-              : <SwipeUp className="h-6 w-6 text-white" />
-            }
+            {swipingDown ? (
+              <SwipeDown className="h-6 w-6 text-white" />
+            ) : (
+              <SwipeUp className="h-6 w-6 text-white" />
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -151,13 +166,13 @@ export function ShortsView() {
           disabled={activeIndex === 0}
           aria-label="Previous short"
           className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-full bg-[var(--surface)] border border-[var(--border)] shadow-sm transition-all",
+            "flex h-10 w-10 items-center justify-center rounded-full bg-surface border border-border shadow-sm transition-all",
             activeIndex === 0
               ? "opacity-30 cursor-not-allowed"
-              : "hover:bg-[var(--surface-secondary)] hover:border-[var(--primary)]/40",
+              : "hover:bg-surface-secondary hover:border-primary/40",
           )}
         >
-          <ChevronUp className="h-5 w-5 text-[var(--text)]" />
+          <ChevronUp className="h-5 w-5 text-text" />
         </motion.button>
 
         <motion.button
@@ -166,13 +181,13 @@ export function ShortsView() {
           disabled={activeIndex === shortVideos.length - 1}
           aria-label="Next short"
           className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-full bg-[var(--surface)] border border-[var(--border)] shadow-sm transition-all",
+            "flex h-10 w-10 items-center justify-center rounded-full bg-surface border border-border shadow-sm transition-all",
             activeIndex === shortVideos.length - 1
               ? "opacity-30 cursor-not-allowed"
-              : "hover:bg-[var(--surface-secondary)] hover:border-[var(--primary)]/40",
+              : "hover:bg-surface-secondary hover:border-primary/40",
           )}
         >
-          <ChevronDown className="h-5 w-5 text-[var(--text)]" />
+          <ChevronDown className="h-5 w-5 text-text" />
         </motion.button>
       </div>
 
@@ -186,8 +201,8 @@ export function ShortsView() {
             className={cn(
               "rounded-full transition-all duration-200",
               i === activeIndex
-                ? "h-5 w-1.5 bg-[var(--primary)]"
-                : "h-1.5 w-1.5 bg-[var(--border)] hover:bg-[var(--text-secondary)]",
+                ? "h-5 w-1.5 bg-primary"
+                : "h-1.5 w-1.5 bg-border hover:bg-text-secondary",
             )}
           />
         ))}
@@ -212,11 +227,19 @@ export function ShortsView() {
               <div className="flex items-center gap-2 rounded-full bg-black/70 backdrop-blur-sm px-4 py-2 text-xs text-white/80 shadow-lg">
                 <Keyboard className="h-3.5 w-3.5 shrink-0" />
                 <span>Use</span>
-                <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">↑</kbd>
-                <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">↓</kbd>
+                <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">
+                  ↑
+                </kbd>
+                <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">
+                  ↓
+                </kbd>
                 <span>or</span>
-                <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">J</kbd>
-                <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">K</kbd>
+                <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">
+                  J
+                </kbd>
+                <kbd className="inline-flex h-5 items-center rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px]">
+                  K
+                </kbd>
                 <span>to navigate</span>
               </div>
             )}

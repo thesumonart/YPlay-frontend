@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
 import { CheckCircle2 } from "lucide-react";
-import type { Video } from "@/types";
-import { formatViews, formatDuration, timeAgo } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
 import { VideoCardMenu } from "@/components/video/VideoCardMenu";
+import { formatDuration, formatViews, timeAgo } from "@/lib/utils";
+import type { Video } from "@/types";
 
 interface UpNextCardProps {
   video: Video;
@@ -13,9 +13,9 @@ interface UpNextCardProps {
 
 export function UpNextCard({ video }: UpNextCardProps) {
   return (
-    <div className="group flex gap-3 rounded-xl p-2 -mx-2 hover:bg-[var(--surface-secondary)] transition-colors">
+    <div className="group flex gap-3 rounded-xl p-2 -mx-2 hover:bg-surface-secondary transition-colors">
       {/* Thumbnail */}
-      <div className="relative shrink-0 w-40 aspect-video rounded-lg overflow-hidden bg-[var(--surface-secondary)]">
+      <div className="relative shrink-0 w-40 aspect-video rounded-lg overflow-hidden bg-surface-secondary">
         <Link href={`/watch/${video.id}`} className="block w-full h-full">
           <Image
             src={video.thumbnail}
@@ -35,15 +35,15 @@ export function UpNextCard({ video }: UpNextCardProps) {
       <div className="flex flex-col gap-1 min-w-0 flex-1">
         <Link
           href={`/watch/${video.id}`}
-          className="text-sm font-semibold text-[var(--text)] line-clamp-2 leading-snug hover:text-[var(--primary)] transition-colors"
+          className="text-sm font-semibold text-text line-clamp-2 leading-snug hover:text-primary transition-colors"
         >
           {video.title}
         </Link>
-        <p className="flex items-center gap-1 text-xs text-[var(--text-secondary)]">
+        <p className="flex items-center gap-1 text-xs text-text-secondary">
           {video.channel.name}
           {video.channel.verified && <CheckCircle2 className="h-3 w-3" />}
         </p>
-        <p className="text-xs text-[var(--text-secondary)]">
+        <p className="text-xs text-text-secondary">
           {formatViews(video.views)} · {timeAgo(video.publishedAt)}
         </p>
       </div>

@@ -1,17 +1,27 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  CheckCircle2,
+  MessageSquare,
+  Pause,
+  Play,
+  Share2,
+  ThumbsDown,
+  ThumbsUp,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import {
-  Play, Pause, ThumbsUp, ThumbsDown,
-  Share2, MessageSquare, CheckCircle2, Volume2, VolumeX,
-} from "lucide-react";
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/shared/Avatar";
+import { cn, formatDuration, formatViews } from "@/lib/utils";
 import type { Video } from "@/types";
-import { formatViews, formatDuration } from "@/lib/utils";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/shared/Avatar";
-import { cn } from "@/lib/utils";
 
 interface ShortCardProps {
   video: Video;
@@ -23,7 +33,7 @@ function ActionButton({
   label,
   count,
   active,
-  activeColor = "text-[var(--primary)]",
+  activeColor = "text-primary",
   onClick,
 }: {
   icon: React.ElementType;
@@ -40,13 +50,17 @@ function ActionButton({
       aria-label={label}
       className="flex flex-col items-center gap-1"
     >
-      <div className={cn(
-        "flex h-11 w-11 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-colors hover:bg-white/20",
-        active && activeColor,
-      )}>
+      <div
+        className={cn(
+          "flex h-11 w-11 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-colors hover:bg-white/20",
+          active && activeColor,
+        )}
+      >
         <Icon className={cn("h-5 w-5 text-white", active && activeColor)} />
       </div>
-      {count && <span className="text-[11px] font-medium text-white/90">{count}</span>}
+      {count && (
+        <span className="text-[11px] font-medium text-white/90">{count}</span>
+      )}
     </motion.button>
   );
 }
@@ -59,14 +73,17 @@ export function ShortCard({ video, active }: ShortCardProps) {
   const [progress, setProgress] = useState(0);
   const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Auto-play when this card becomes active, pause when it leaves
   useEffect(() => {
     if (active) {
       setProgress(0);
       setPlaying(true);
       progressRef.current = setInterval(() => {
         setProgress((prev) => {
-          if (prev >= 1) { clearInterval(progressRef.current!); setPlaying(false); return 1; }
+          if (prev >= 1) {
+            clearInterval(progressRef.current!);
+            setPlaying(false);
+            return 1;
+          }
           return prev + 1 / (video.duration * 10);
         });
       }, 100);
@@ -75,7 +92,9 @@ export function ShortCard({ video, active }: ShortCardProps) {
       setProgress(0);
       if (progressRef.current) clearInterval(progressRef.current);
     }
-    return () => { if (progressRef.current) clearInterval(progressRef.current); };
+    return () => {
+      if (progressRef.current) clearInterval(progressRef.current);
+    };
   }, [active, video.duration]);
 
   const togglePlay = () => {
@@ -84,7 +103,10 @@ export function ShortCard({ video, active }: ShortCardProps) {
       if (next) {
         progressRef.current = setInterval(() => {
           setProgress((prev) => {
-            if (prev >= 1) { clearInterval(progressRef.current!); return 0; }
+            if (prev >= 1) {
+              clearInterval(progressRef.current!);
+              return 0;
+            }
             return prev + 1 / (video.duration * 10);
           });
         }, 100);
@@ -95,8 +117,14 @@ export function ShortCard({ video, active }: ShortCardProps) {
     });
   };
 
-  const handleLike = () => { setLiked((l) => !l); if (disliked) setDisliked(false); };
-  const handleDislike = () => { setDisliked((d) => !d); if (liked) setLiked(false); };
+  const handleLike = () => {
+    setLiked((l) => !l);
+    if (disliked) setDisliked(false);
+  };
+  const handleDislike = () => {
+    setDisliked((d) => !d);
+    if (liked) setLiked(false);
+  };
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
@@ -107,7 +135,10 @@ export function ShortCard({ video, active }: ShortCardProps) {
           alt={video.title}
           fill
           sizes="(max-width: 480px) 100vw, 400px"
-          className={cn("object-cover transition-opacity duration-300", playing && "opacity-70")}
+          className={cn(
+            "object-cover transition-opacity duration-300",
+            playing && "opacity-70",
+          )}
           priority={active}
         />
 
@@ -140,11 +171,18 @@ export function ShortCard({ video, active }: ShortCardProps) {
 
         {/* Mute button — top right */}
         <button
-          onClick={(e) => { e.stopPropagation(); setMuted((m) => !m); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setMuted((m) => !m);
+          }}
           aria-label={muted ? "Unmute" : "Mute"}
           className="absolute top-4 right-4 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
         >
-          {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          {muted ? (
+            <VolumeX className="h-4 w-4" />
+          ) : (
+            <Volume2 className="h-4 w-4" />
+          )}
         </button>
 
         {/* Right-side action buttons */}
@@ -154,14 +192,20 @@ export function ShortCard({ video, active }: ShortCardProps) {
             label="Like"
             count={formatViews(video.likes + (liked ? 1 : 0))}
             active={liked}
-            activeColor="text-[var(--primary)]"
-            onClick={(e) => { e.stopPropagation(); handleLike(); }}
+            activeColor="text-primary"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleLike();
+            }}
           />
           <ActionButton
             icon={ThumbsDown}
             label="Dislike"
             active={disliked}
-            onClick={(e) => { e.stopPropagation(); handleDislike(); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDislike();
+            }}
           />
           <ActionButton
             icon={MessageSquare}
@@ -181,12 +225,17 @@ export function ShortCard({ video, active }: ShortCardProps) {
               className="flex items-center gap-2 w-fit"
             >
               <Avatar className="h-8 w-8 ring-2 ring-white/30">
-                <AvatarImage src={video.channel.avatar} alt={video.channel.name} />
+                <AvatarImage
+                  src={video.channel.avatar}
+                  alt={video.channel.name}
+                />
                 <AvatarFallback>{video.channel.name[0]}</AvatarFallback>
               </Avatar>
               <span className="flex items-center gap-1 text-sm font-semibold text-white">
                 {video.channel.name}
-                {video.channel.verified && <CheckCircle2 className="h-3.5 w-3.5 text-white/70" />}
+                {video.channel.verified && (
+                  <CheckCircle2 className="h-3.5 w-3.5 text-white/70" />
+                )}
               </span>
             </Link>
 
@@ -207,7 +256,7 @@ export function ShortCard({ video, active }: ShortCardProps) {
         {/* Progress bar */}
         <div className="absolute bottom-0 left-0 right-0 z-40 h-0.5 bg-white/20">
           <motion.div
-            className="h-full bg-[var(--primary)]"
+            className="h-full bg-primary"
             style={{ width: `${progress * 100}%` }}
           />
         </div>

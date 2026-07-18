@@ -6,7 +6,8 @@ export const mockNotifications: Notification[] = [
     id: "n1",
     type: "upload",
     actor: mockUsers[0],
-    message: "Alex Rivera uploaded a new video: Building a Design System from Scratch in 2025",
+    message:
+      "Alex Rivera uploaded a new video: Building a Design System from Scratch in 2025",
     videoId: "v1",
     videoThumbnail: "https://picsum.photos/seed/v1/640/360",
     read: false,
@@ -16,7 +17,8 @@ export const mockNotifications: Notification[] = [
     id: "n2",
     type: "comment",
     actor: mockUsers[2],
-    message: "Jordan Blake commented on your video: \"This is exactly what I needed, thanks!\"",
+    message:
+      'Jordan Blake commented on your video: "This is exactly what I needed, thanks!"',
     videoId: "v6",
     videoThumbnail: "https://picsum.photos/seed/v6/640/360",
     read: false,
@@ -26,7 +28,8 @@ export const mockNotifications: Notification[] = [
     id: "n3",
     type: "reply",
     actor: mockUsers[1],
-    message: "Mia Chen replied to your comment on Next.js 16 App Router – Complete Guide",
+    message:
+      "Mia Chen replied to your comment on Next.js 16 App Router – Complete Guide",
     videoId: "v6",
     videoThumbnail: "https://picsum.photos/seed/v6/640/360",
     read: false,
@@ -72,7 +75,8 @@ export const mockNotifications: Notification[] = [
     id: "n8",
     type: "upload",
     actor: mockUsers[2],
-    message: "Jordan Blake uploaded: Speed Run – Dark Souls in Under 30 Minutes",
+    message:
+      "Jordan Blake uploaded: Speed Run – Dark Souls in Under 30 Minutes",
     videoId: "v9",
     videoThumbnail: "https://picsum.photos/seed/v9/640/360",
     read: true,
@@ -92,7 +96,8 @@ export const mockNotifications: Notification[] = [
     id: "n10",
     type: "comment",
     actor: mockUsers[3],
-    message: "Sofia Patel commented: \"Would love a follow-up on dark mode tokens!\"",
+    message:
+      'Sofia Patel commented: "Would love a follow-up on dark mode tokens!"',
     videoId: "v1",
     videoThumbnail: "https://picsum.photos/seed/v1/640/360",
     read: true,

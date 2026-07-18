@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
-import type { User } from "@/types";
-import { mockVideos } from "@/data/videos";
-import { mockPlaylists } from "@/data/playlists";
-import { ChannelBanner } from "@/components/channel/ChannelBanner";
+import { useState } from "react";
 import { ChannelAbout } from "@/components/channel/ChannelAbout";
-import { VideoCard } from "@/components/video/VideoCard";
+import { ChannelBanner } from "@/components/channel/ChannelBanner";
 import { PlaylistCard } from "@/components/video/PlaylistCard";
+import { VideoCard } from "@/components/video/VideoCard";
+import { mockPlaylists } from "@/data/playlists";
+import { mockVideos } from "@/data/videos";
 import { cn } from "@/lib/utils";
+import type { User } from "@/types";
 
 const TABS = ["Videos", "Playlists", "About"] as const;
 type Tab = (typeof TABS)[number];

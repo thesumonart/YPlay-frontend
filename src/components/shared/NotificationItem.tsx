@@ -1,61 +1,36 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import {
-  Upload,
   MessageSquare,
-  ThumbsUp,
-  Users,
-  Reply,
   Radio,
+  Reply,
+  ThumbsUp,
+  Upload,
+  Users,
   X,
 } from "lucide-react";
-import type { Notification } from "@/types";
-import { timeAgo } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
 import {
   Avatar,
-  AvatarImage,
   AvatarFallback,
+  AvatarImage,
 } from "@/components/shared/Avatar";
 import { Button } from "@/components/shared/Button";
-import { cn } from "@/lib/utils";
+import { cn, timeAgo } from "@/lib/utils";
+import type { Notification } from "@/types";
 
 const TYPE_CONFIG: Record<
   Notification["type"],
   { icon: React.ElementType; color: string; bg: string }
 > = {
-  upload: {
-    icon: Upload,
-    color: "text-[var(--secondary)]",
-    bg: "bg-[var(--secondary)]/10",
-  },
-  comment: {
-    icon: MessageSquare,
-    color: "text-[var(--accent)]",
-    bg: "bg-[var(--accent)]/10",
-  },
-  reply: {
-    icon: Reply,
-    color: "text-[var(--accent)]",
-    bg: "bg-[var(--accent)]/10",
-  },
-  like: {
-    icon: ThumbsUp,
-    color: "text-[var(--primary)]",
-    bg: "bg-[var(--primary)]/10",
-  },
-  subscription: {
-    icon: Users,
-    color: "text-[var(--success)]",
-    bg: "bg-[var(--success)]/10",
-  },
-  live: {
-    icon: Radio,
-    color: "text-[var(--danger)]",
-    bg: "bg-[var(--danger)]/10",
-  },
+  upload: { icon: Upload, color: "text-secondary", bg: "bg-secondary/10" },
+  comment: { icon: MessageSquare, color: "text-accent", bg: "bg-accent/10" },
+  reply: { icon: Reply, color: "text-accent", bg: "bg-accent/10" },
+  like: { icon: ThumbsUp, color: "text-primary", bg: "bg-primary/10" },
+  subscription: { icon: Users, color: "text-success", bg: "bg-success/10" },
+  live: { icon: Radio, color: "text-danger", bg: "bg-danger/10" },
 };
 
 interface NotificationItemProps {

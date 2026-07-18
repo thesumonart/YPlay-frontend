@@ -1,17 +1,28 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Bell,
+  BookMarked,
+  Clock,
+  Compass,
+  History,
+  Home,
+  LayoutDashboard,
+  ListVideo,
+  PlaySquare,
+  Search,
+  Settings,
+  TrendingUp,
+  X,
+  Zap,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Home, Compass, Zap, Search, TrendingUp, PlaySquare,
-  History, Clock, BookMarked, ListVideo, Bell, Settings,
-  LayoutDashboard, X,
-} from "lucide-react";
+import { Button } from "@/components/shared/Button";
+import { Logo } from "@/components/shared/Logo";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store/ui";
-import { Logo } from "@/components/shared/Logo";
-import { Button } from "@/components/shared/Button";
 
 const navItems = [
   { label: "Home", href: "/", icon: Home },
@@ -51,9 +62,9 @@ export function MobileSidebar() {
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="fixed left-0 top-0 bottom-0 z-50 w-72 bg-[var(--surface)] border-r border-[var(--border)] flex flex-col md:hidden"
+            className="fixed left-0 top-0 bottom-0 z-50 w-72 bg-surface border-r border-border flex flex-col md:hidden"
           >
-            <div className="flex items-center justify-between px-4 h-[var(--header-height)] border-b border-[var(--border)]">
+            <div className="flex items-center justify-between px-4 h-[var(--header-height)] border-b border-border">
               <Logo />
               <Button
                 variant="ghost"
@@ -72,13 +83,16 @@ export function MobileSidebar() {
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                    "hover:bg-[var(--surface-secondary)] hover:text-[var(--text)]",
+                    "hover:bg-surface-secondary hover:text-text",
                     pathname === item.href
-                      ? "bg-[var(--surface-secondary)] text-[var(--text)]"
-                      : "text-[var(--text-secondary)]"
+                      ? "bg-surface-secondary text-text"
+                      : "text-text-secondary",
                   )}
                 >
-                  <item.icon size={18} className={cn(pathname === item.href && "text-[var(--primary)]")} />
+                  <item.icon
+                    size={18}
+                    className={cn(pathname === item.href && "text-primary")}
+                  />
                   {item.label}
                 </Link>
               ))}

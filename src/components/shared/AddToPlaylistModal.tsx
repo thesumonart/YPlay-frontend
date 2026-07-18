@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Plus, Lock, Globe, Link2, ListVideo } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Check, Globe, Link2, ListVideo, Lock, Plus, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { mockPlaylists } from "@/data/playlists";
-import type { Playlist } from "@/types";
 import { cn } from "@/lib/utils";
+import type { Playlist } from "@/types";
 
 interface AddToPlaylistModalProps {
   open: boolean;
@@ -21,13 +21,16 @@ const VISIBILITY_ICONS = {
 
 const VISIBILITY_OPTIONS = ["public", "unlisted", "private"] as const;
 
-export function AddToPlaylistModal({ open, onClose, videoId }: AddToPlaylistModalProps) {
+export function AddToPlaylistModal({
+  open,
+  onClose,
+  videoId,
+}: AddToPlaylistModalProps) {
   const userPlaylists = useMemo(
     () => mockPlaylists.filter((p) => p.owner.id === "u1"),
     [],
   );
 
-  // Track which playlists contain this video (local state)
   const [checked, setChecked] = useState<Set<string>>(() => {
     const initial = new Set<string>();
     for (const pl of userPlaylists) {
@@ -38,10 +41,11 @@ export function AddToPlaylistModal({ open, onClose, videoId }: AddToPlaylistModa
 
   const [creating, setCreating] = useState(false);
   const [newTitle, setNewTitle] = useState("");
-  const [newVisibility, setNewVisibility] = useState<Playlist["visibility"]>("public");
-  const [localPlaylists, setLocalPlaylists] = useState<Playlist[]>(userPlaylists);
+  const [newVisibility, setNewVisibility] =
+    useState<Playlist["visibility"]>("public");
+  const [localPlaylists, setLocalPlaylists] =
+    useState<Playlist[]>(userPlaylists);
 
-  // Reset when videoId changes
   useEffect(() => {
     const initial = new Set<string>();
     for (const pl of userPlaylists) {
@@ -50,7 +54,6 @@ export function AddToPlaylistModal({ open, onClose, videoId }: AddToPlaylistModa
     setChecked(initial);
   }, [videoId, userPlaylists]);
 
-  // Close on Escape
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -58,11 +61,12 @@ export function AddToPlaylistModal({ open, onClose, videoId }: AddToPlaylistModa
     return () => window.removeEventListener("keydown", handler);
   }, [open, onClose]);
 
-  // Prevent body scroll
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [open]);
 
   const toggle = (id: string) =>
@@ -117,15 +121,15 @@ export function AddToPlaylistModal({ open, onClose, videoId }: AddToPlaylistModa
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed left-1/2 top-1/2 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl flex flex-col overflow-hidden"
+            className="fixed left-1/2 top-1/2 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-surface shadow-2xl flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
-              <h2 className="text-sm font-bold text-[var(--text)]">Save to playlist</h2>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+              <h2 className="text-sm font-bold text-text">Save to playlist</h2>
               <button
                 onClick={onClose}
                 aria-label="Close"
-                className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text)] transition-colors"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-text-secondary hover:bg-surface-secondary hover:text-text transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -135,8 +139,10 @@ export function AddToPlaylistModal({ open, onClose, videoId }: AddToPlaylistModa
             <div className="max-h-72 overflow-y-auto">
               {localPlaylists.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 gap-2 text-center">
-                  <ListVideo className="h-8 w-8 text-[var(--text-secondary)]" />
-                  <p className="text-sm text-[var(--text-secondary)]">No playlists yet</p>
+                  <ListVideo className="h-8 w-8 text-text-secondary" />
+                  <p className="text-sm text-text-secondary">
+                    No playlists yet
+                  </p>
                 </div>
               ) : (
                 <AnimatePresence initial={false}>
@@ -152,26 +158,28 @@ export function AddToPlaylistModal({ open, onClose, videoId }: AddToPlaylistModa
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.18 }}
                         onClick={() => toggle(pl.id)}
-                        className="flex w-full items-center gap-3 px-5 py-3 hover:bg-[var(--surface-secondary)] transition-colors text-left"
+                        className="flex w-full items-center gap-3 px-5 py-3 hover:bg-surface-secondary transition-colors text-left"
                       >
                         {/* Checkbox */}
                         <div
                           className={cn(
                             "h-4 w-4 shrink-0 rounded border-2 flex items-center justify-center transition-colors",
                             isChecked
-                              ? "bg-[var(--primary)] border-[var(--primary)]"
-                              : "border-[var(--border)] bg-[var(--surface)]",
+                              ? "bg-primary border-primary"
+                              : "border-border bg-surface",
                           )}
                         >
-                          {isChecked && <Check className="h-2.5 w-2.5 text-white" />}
+                          {isChecked && (
+                            <Check className="h-2.5 w-2.5 text-white" />
+                          )}
                         </div>
 
                         {/* Info */}
                         <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                          <span className="text-sm font-medium text-[var(--text)] truncate">
+                          <span className="text-sm font-medium text-text truncate">
                             {pl.title}
                           </span>
-                          <span className="flex items-center gap-1 text-xs text-[var(--text-secondary)]">
+                          <span className="flex items-center gap-1 text-xs text-text-secondary">
                             <VisIcon className="h-3 w-3" />
                             <span className="capitalize">{pl.visibility}</span>
                             <span>·</span>
@@ -186,7 +194,7 @@ export function AddToPlaylistModal({ open, onClose, videoId }: AddToPlaylistModa
             </div>
 
             {/* Create new playlist */}
-            <div className="border-t border-[var(--border)]">
+            <div className="border-t border-border">
               <AnimatePresence initial={false}>
                 {creating ? (
                   <motion.div
@@ -206,7 +214,7 @@ export function AddToPlaylistModal({ open, onClose, videoId }: AddToPlaylistModa
                         if (e.key === "Escape") setCreating(false);
                       }}
                       placeholder="Playlist name"
-                      className="h-9 w-full rounded-lg border border-[var(--border)] bg-[var(--surface-secondary)] px-3 text-sm text-[var(--text)] placeholder:text-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                      className="h-9 w-full rounded-lg border border-border bg-surface-secondary px-3 text-sm text-text placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                     />
 
                     {/* Visibility selector */}
@@ -220,8 +228,8 @@ export function AddToPlaylistModal({ open, onClose, videoId }: AddToPlaylistModa
                             className={cn(
                               "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-medium capitalize transition-colors border",
                               newVisibility === v
-                                ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
-                                : "border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text)]",
+                                ? "border-primary bg-primary/10 text-primary"
+                                : "border-border text-text-secondary hover:text-text",
                             )}
                           >
                             <Icon className="h-3 w-3" />
@@ -234,14 +242,14 @@ export function AddToPlaylistModal({ open, onClose, videoId }: AddToPlaylistModa
                     <div className="flex gap-2">
                       <button
                         onClick={() => setCreating(false)}
-                        className="flex-1 rounded-lg border border-[var(--border)] py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)] transition-colors"
+                        className="flex-1 rounded-lg border border-border py-2 text-sm font-medium text-text-secondary hover:bg-surface-secondary transition-colors"
                       >
                         Cancel
                       </button>
                       <button
                         onClick={handleCreate}
                         disabled={!newTitle.trim()}
-                        className="flex-1 rounded-lg bg-[var(--primary)] py-2 text-sm font-medium text-white hover:bg-[var(--primary-hover)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        className="flex-1 rounded-lg bg-primary py-2 text-sm font-medium text-white hover:bg-primary-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                       >
                         Create
                       </button>
@@ -254,7 +262,7 @@ export function AddToPlaylistModal({ open, onClose, videoId }: AddToPlaylistModa
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={() => setCreating(true)}
-                    className="flex w-full items-center gap-3 px-5 py-3.5 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text)] transition-colors"
+                    className="flex w-full items-center gap-3 px-5 py-3.5 text-sm font-medium text-text-secondary hover:bg-surface-secondary hover:text-text transition-colors"
                   >
                     <Plus className="h-4 w-4" />
                     New playlist
@@ -264,10 +272,10 @@ export function AddToPlaylistModal({ open, onClose, videoId }: AddToPlaylistModa
             </div>
 
             {/* Footer */}
-            <div className="border-t border-[var(--border)] px-5 py-3 flex justify-end">
+            <div className="border-t border-border px-5 py-3 flex justify-end">
               <button
                 onClick={onClose}
-                className="rounded-lg bg-[var(--primary)] px-5 py-2 text-sm font-medium text-white hover:bg-[var(--primary-hover)] transition-colors"
+                className="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary-hover transition-colors"
               >
                 Done
               </button>

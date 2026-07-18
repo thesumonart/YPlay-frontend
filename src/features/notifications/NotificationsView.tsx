@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Bell, CheckCheck, Trash2 } from "lucide-react";
-import { mockNotifications } from "@/data/notifications";
-import type { Notification } from "@/types";
-import { NotificationItem } from "@/components/shared/NotificationItem";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/shared/Button";
+import { NotificationItem } from "@/components/shared/NotificationItem";
+import { mockNotifications } from "@/data/notifications";
 import { cn } from "@/lib/utils";
+import type { Notification } from "@/types";
 
 const FILTERS = ["All", "Unread", "Comments", "Uploads", "Activity"] as const;
 type Filter = (typeof FILTERS)[number];

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { TrendingUp } from "lucide-react";
-import { mockVideos } from "@/data/videos";
+import { useMemo, useState } from "react";
 import { TrendingCard } from "@/components/video/TrendingCard";
 import { VideoCard } from "@/components/video/VideoCard";
+import { mockVideos } from "@/data/videos";
 import { cn } from "@/lib/utils";
 
 const TABS = [

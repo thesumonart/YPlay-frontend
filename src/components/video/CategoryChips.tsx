@@ -10,9 +10,17 @@ interface CategoryChipsProps {
   onSelect: (slug: string) => void;
 }
 
-export function CategoryChips({ categories, selected, onSelect }: CategoryChipsProps) {
+export function CategoryChips({
+  categories,
+  selected,
+  onSelect,
+}: CategoryChipsProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none" role="tablist" aria-label="Filter by category">
+    <div
+      className="flex gap-2 overflow-x-auto pb-1 scrollbar-none"
+      role="tablist"
+      aria-label="Filter by category"
+    >
       {categories.map((cat) => {
         const isActive = selected === cat.slug;
         return (
@@ -22,16 +30,16 @@ export function CategoryChips({ categories, selected, onSelect }: CategoryChipsP
             aria-selected={isActive}
             onClick={() => onSelect(cat.slug)}
             className={cn(
-              "relative shrink-0 rounded-lg px-4 py-1.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]",
+              "relative shrink-0 rounded-lg px-4 py-1.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
               isActive
                 ? "text-white"
-                : "bg-[var(--surface-secondary)] text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--border)]"
+                : "bg-surface-secondary text-text-secondary hover:text-text hover:bg-border",
             )}
           >
             {isActive && (
               <motion.span
                 layoutId="category-pill"
-                className="absolute inset-0 rounded-lg bg-[var(--text)]"
+                className="absolute inset-0 rounded-lg bg-text"
                 transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
               />
             )}

@@ -1,12 +1,14 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { SearchView } from "@/features/search/SearchView";
 
 interface SearchPageProps {
   searchParams: Promise<{ q?: string }>;
 }
 
-export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: SearchPageProps): Promise<Metadata> {
   const { q } = await searchParams;
   return {
     title: q ? `"${q}" – Search` : "Search",

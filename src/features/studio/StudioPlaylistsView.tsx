@@ -1,25 +1,25 @@
-"use client";
+﻿"use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  Plus,
-  Search,
-  X,
-  Trash2,
-  Pencil,
   Check,
   Globe,
-  Lock,
   Link as LinkIcon,
   ListVideo,
+  Lock,
   MoreHorizontal,
+  Pencil,
+  Plus,
+  Search,
+  Trash2,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { mockPlaylists } from "@/data/playlists";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/shared/Button";
+import { mockPlaylists } from "@/data/playlists";
 import { cn, timeAgo } from "@/lib/utils";
 import type { Playlist } from "@/types";
 
@@ -33,17 +33,17 @@ const VISIBILITY_CONFIG: Record<
   public: {
     label: "Public",
     icon: Globe,
-    className: "text-[var(--success)] bg-[var(--success)]/10",
+    className: "text-success bg-success/10",
   },
   unlisted: {
     label: "Unlisted",
     icon: LinkIcon,
-    className: "text-[var(--warning)] bg-[var(--warning)]/10",
+    className: "text-warning bg-warning/10",
   },
   private: {
     label: "Private",
     icon: Lock,
-    className: "text-[var(--text-secondary)] bg-[var(--surface-secondary)]",
+    className: "text-text-secondary bg-surface-secondary",
   },
 };
 
@@ -120,8 +120,8 @@ export function StudioPlaylistsView() {
         prev.map((p) =>
           p.id === id
             ? { ...p, title: trimmed, updatedAt: new Date().toISOString() }
-            : p
-        )
+            : p,
+        ),
       );
     }
     setEditingId(null);
@@ -134,13 +134,13 @@ export function StudioPlaylistsView() {
         const idx = VISIBILITY_CYCLE.indexOf(p.visibility);
         const next = VISIBILITY_CYCLE[(idx + 1) % VISIBILITY_CYCLE.length];
         return { ...p, visibility: next, updatedAt: new Date().toISOString() };
-      })
+      }),
     );
   };
 
   const deletePlaylist = (id: string) => {
     setPlaylists((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, deleted: true } : p))
+      prev.map((p) => (p.id === id ? { ...p, deleted: true } : p)),
     );
   };
 
@@ -170,8 +170,8 @@ export function StudioPlaylistsView() {
       {/* Header */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-xl font-bold text-[var(--text)]">Playlists</h1>
-          <p className="text-sm text-[var(--text-secondary)] mt-0.5">
+          <h1 className="text-xl font-bold text-text">Playlists</h1>
+          <p className="text-sm text-text-secondary mt-0.5">
             {counts.all} playlist{counts.all !== 1 ? "s" : ""}
           </p>
         </div>
@@ -195,13 +195,13 @@ export function StudioPlaylistsView() {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 flex flex-col gap-4">
-              <p className="text-sm font-semibold text-[var(--text)]">
+            <div className="rounded-xl border border-border bg-surface p-5 flex flex-col gap-4">
+              <p className="text-sm font-semibold text-text">
                 Create new playlist
               </p>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-[var(--text-secondary)]">
+                <label className="text-xs font-medium text-text-secondary">
                   Title
                 </label>
                 <input
@@ -216,15 +216,15 @@ export function StudioPlaylistsView() {
                   maxLength={100}
                   aria-label="New playlist title"
                   className={cn(
-                    "h-9 w-full rounded-lg border border-[var(--border)] bg-[var(--surface-secondary)]",
-                    "px-3 text-sm text-[var(--text)] placeholder:text-[var(--text-secondary)]",
-                    "focus:outline-none focus:ring-2 focus:ring-[var(--primary)] transition-all"
+                    "h-9 w-full rounded-lg border border-border bg-surface-secondary",
+                    "px-3 text-sm text-text placeholder:text-text-secondary",
+                    "focus:outline-none focus:ring-2 focus:ring-primary transition-all",
                   )}
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-[var(--text-secondary)]">
+                <label className="text-xs font-medium text-text-secondary">
                   Visibility
                 </label>
                 <div className="flex gap-1.5">
@@ -237,8 +237,8 @@ export function StudioPlaylistsView() {
                         className={cn(
                           "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium border transition-colors",
                           newVisibility === v
-                            ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
-                            : "border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--surface-secondary)]"
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border text-text-secondary hover:text-text hover:bg-surface-secondary",
                         )}
                       >
                         <Icon className="h-3 w-3" />
@@ -274,7 +274,10 @@ export function StudioPlaylistsView() {
       </AnimatePresence>
 
       {/* Visibility filter tabs */}
-      <div className="flex gap-1 border-b border-[var(--border)]" role="tablist">
+      <div
+        className="flex gap-1 border-b border-border"
+        role="tablist"
+      >
         {FILTER_TABS.map(({ id, label }) => (
           <button
             key={id}
@@ -284,8 +287,8 @@ export function StudioPlaylistsView() {
             className={cn(
               "relative flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none shrink-0",
               visFilter === id
-                ? "text-[var(--text)]"
-                : "text-[var(--text-secondary)] hover:text-[var(--text)]"
+                ? "text-text"
+                : "text-text-secondary hover:text-text",
             )}
           >
             {label}
@@ -293,8 +296,8 @@ export function StudioPlaylistsView() {
               className={cn(
                 "text-[10px] font-semibold tabular-nums",
                 visFilter === id
-                  ? "text-[var(--text-secondary)]"
-                  : "text-[var(--border)]"
+                  ? "text-text-secondary"
+                  : "text-border",
               )}
             >
               {counts[id]}
@@ -302,7 +305,7 @@ export function StudioPlaylistsView() {
             {visFilter === id && (
               <motion.div
                 layoutId="playlists-tab-indicator"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--primary)] rounded-full"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
                 transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
               />
             )}
@@ -312,23 +315,23 @@ export function StudioPlaylistsView() {
 
       {/* Search */}
       <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-secondary)] pointer-events-none" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary pointer-events-none" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search playlists..."
           aria-label="Search playlists"
           className={cn(
-            "h-9 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)]",
-            "pl-9 pr-8 text-sm text-[var(--text)] placeholder:text-[var(--text-secondary)]",
-            "focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all"
+            "h-9 w-full rounded-lg border border-border bg-surface",
+            "pl-9 pr-8 text-sm text-text placeholder:text-text-secondary",
+            "focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all",
           )}
         />
         {query && (
           <button
             onClick={() => setQuery("")}
             aria-label="Clear search"
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text transition-colors"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -345,13 +348,13 @@ export function StudioPlaylistsView() {
             exit={{ opacity: 0 }}
             className="flex flex-col items-center justify-center py-24 gap-3 text-center"
           >
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--surface-secondary)]">
-              <ListVideo className="h-6 w-6 text-[var(--text-secondary)]" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-secondary">
+              <ListVideo className="h-6 w-6 text-text-secondary" />
             </div>
-            <p className="text-base font-semibold text-[var(--text)]">
+            <p className="text-base font-semibold text-text">
               No playlists found
             </p>
-            <p className="text-sm text-[var(--text-secondary)]">
+            <p className="text-sm text-text-secondary">
               {query ? "Try a different search" : "Create your first playlist"}
             </p>
             {!query && (
@@ -371,12 +374,15 @@ export function StudioPlaylistsView() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="rounded-xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden"
+            className="rounded-xl border border-border bg-surface overflow-hidden"
           >
             <AnimatePresence initial={false}>
               {visible.map((playlist, i) => {
-                const { label, icon: VisIcon, className: visCls } =
-                  VISIBILITY_CONFIG[playlist.visibility];
+                const {
+                  label,
+                  icon: VisIcon,
+                  className: visCls,
+                } = VISIBILITY_CONFIG[playlist.visibility];
                 const isEditing = editingId === playlist.id;
                 const thumb =
                   playlist.videos[0]?.thumbnail ?? playlist.thumbnail;
@@ -389,12 +395,12 @@ export function StudioPlaylistsView() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, height: 0, overflow: "hidden" }}
                     transition={{ duration: 0.2, delay: i * 0.03 }}
-                    className="group flex items-center gap-4 px-4 py-3 border-b border-[var(--border)] last:border-0 hover:bg-[var(--surface-secondary)]/40 transition-colors"
+                    className="group flex items-center gap-4 px-4 py-3 border-b border-border last:border-0 hover:bg-surface-secondary/40 transition-colors"
                   >
                     {/* Thumbnail */}
                     <Link
                       href={`/playlist/${playlist.id}`}
-                      className="relative shrink-0 w-20 aspect-video rounded-lg overflow-hidden bg-[var(--surface-secondary)]"
+                      className="relative shrink-0 w-20 aspect-video rounded-lg overflow-hidden bg-surface-secondary"
                       tabIndex={isEditing ? -1 : 0}
                     >
                       <Image
@@ -428,22 +434,22 @@ export function StudioPlaylistsView() {
                             maxLength={100}
                             aria-label="Edit playlist title"
                             className={cn(
-                              "flex-1 h-8 rounded-lg border border-[var(--primary)] bg-[var(--surface-secondary)]",
-                              "px-2.5 text-sm text-[var(--text)]",
-                              "focus:outline-none focus:ring-2 focus:ring-[var(--primary)] transition-all"
+                              "flex-1 h-8 rounded-lg border border-primary bg-surface-secondary",
+                              "px-2.5 text-sm text-text",
+                              "focus:outline-none focus:ring-2 focus:ring-primary transition-all",
                             )}
                           />
                           <button
                             onClick={() => commitEdit(playlist.id)}
                             aria-label="Save title"
-                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] transition-colors shrink-0"
+                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-hover transition-colors shrink-0"
                           >
                             <Check className="h-3.5 w-3.5" />
                           </button>
                           <button
                             onClick={() => setEditingId(null)}
                             aria-label="Cancel edit"
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors shrink-0"
+                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-text-secondary hover:text-text transition-colors shrink-0"
                           >
                             <X className="h-3.5 w-3.5" />
                           </button>
@@ -451,7 +457,7 @@ export function StudioPlaylistsView() {
                       ) : (
                         <Link
                           href={`/playlist/${playlist.id}`}
-                          className="text-sm font-semibold text-[var(--text)] line-clamp-1 hover:text-[var(--primary)] transition-colors"
+                          className="text-sm font-semibold text-text line-clamp-1 hover:text-primary transition-colors"
                         >
                           {playlist.title}
                         </Link>
@@ -464,25 +470,25 @@ export function StudioPlaylistsView() {
                           title="Click to change visibility"
                           className={cn(
                             "flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium transition-colors hover:opacity-80",
-                            visCls
+                            visCls,
                           )}
                         >
                           <VisIcon className="h-2.5 w-2.5" />
                           {label}
                         </button>
 
-                        <span className="text-xs text-[var(--text-secondary)]">
+                        <span className="text-xs text-text-secondary">
                           {playlist.videos.length}{" "}
                           {playlist.videos.length === 1 ? "video" : "videos"}
                         </span>
 
-                        <span className="text-xs text-[var(--text-secondary)] hidden sm:inline">
+                        <span className="text-xs text-text-secondary hidden sm:inline">
                           Updated {timeAgo(playlist.updatedAt)}
                         </span>
                       </div>
 
                       {playlist.description && (
-                        <p className="text-xs text-[var(--text-secondary)] line-clamp-1 hidden md:block">
+                        <p className="text-xs text-text-secondary line-clamp-1 hidden md:block">
                           {playlist.description}
                         </p>
                       )}
@@ -493,7 +499,7 @@ export function StudioPlaylistsView() {
                       <button
                         onClick={() => startEdit(playlist)}
                         aria-label="Rename playlist"
-                        className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-secondary)] hover:bg-[var(--border)] hover:text-[var(--text)] transition-colors"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-text-secondary hover:bg-border hover:text-text transition-colors"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </button>
@@ -502,7 +508,7 @@ export function StudioPlaylistsView() {
                         <DropdownMenu.Trigger asChild>
                           <button
                             aria-label="More options"
-                            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-secondary)] hover:bg-[var(--border)] hover:text-[var(--text)] transition-colors"
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-text-secondary hover:bg-border hover:text-text transition-colors"
                           >
                             <MoreHorizontal className="h-4 w-4" />
                           </button>
@@ -511,26 +517,26 @@ export function StudioPlaylistsView() {
                           <DropdownMenu.Content
                             align="end"
                             sideOffset={4}
-                            className="z-50 min-w-40 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 shadow-lg animate-in fade-in-0 zoom-in-95"
+                            className="z-50 min-w-40 overflow-hidden rounded-xl border border-border bg-surface p-1 shadow-lg animate-in fade-in-0 zoom-in-95"
                           >
                             <DropdownMenu.Item
                               onSelect={() => startEdit(playlist)}
-                              className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:bg-[var(--surface-secondary)] transition-colors"
+                              className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-text outline-none focus:bg-surface-secondary transition-colors"
                             >
                               <Pencil className="h-3.5 w-3.5" />
                               Rename
                             </DropdownMenu.Item>
                             <DropdownMenu.Item
                               onSelect={() => cycleVisibility(playlist.id)}
-                              className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:bg-[var(--surface-secondary)] transition-colors"
+                              className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-text outline-none focus:bg-surface-secondary transition-colors"
                             >
                               <VisIcon className="h-3.5 w-3.5" />
                               Change visibility
                             </DropdownMenu.Item>
-                            <DropdownMenu.Separator className="my-1 h-px bg-[var(--border)]" />
+                            <DropdownMenu.Separator className="my-1 h-px bg-border" />
                             <DropdownMenu.Item
                               onSelect={() => deletePlaylist(playlist.id)}
-                              className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-[var(--danger)] outline-none focus:bg-[var(--danger)]/10 transition-colors"
+                              className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-danger outline-none focus:bg-danger/10 transition-colors"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                               Delete
@@ -545,14 +551,14 @@ export function StudioPlaylistsView() {
             </AnimatePresence>
 
             {/* Footer */}
-            <div className="border-t border-[var(--border)] px-4 py-3 bg-[var(--surface-secondary)]/50">
-              <p className="text-xs text-[var(--text-secondary)]">
+            <div className="border-t border-border px-4 py-3 bg-surface-secondary/50">
+              <p className="text-xs text-text-secondary">
                 Showing{" "}
-                <span className="font-medium text-[var(--text)]">
+                <span className="font-medium text-text">
                   {visible.length}
                 </span>{" "}
                 of{" "}
-                <span className="font-medium text-[var(--text)]">
+                <span className="font-medium text-text">
                   {counts.all}
                 </span>{" "}
                 playlists

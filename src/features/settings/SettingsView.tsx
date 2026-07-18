@@ -1,22 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useTheme } from "next-themes";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  User,
-  Palette,
   Bell,
-  Shield,
-  Play,
   Globe,
   Monitor,
   Moon,
+  Palette,
+  Play,
+  Shield,
   Sun,
+  User,
 } from "lucide-react";
-import { Switch } from "@/components/shared/Switch";
+import { useTheme } from "next-themes";
+import { useState } from "react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/shared/Avatar";
 import { Button } from "@/components/shared/Button";
-import { SettingsRow, SettingsSection } from "@/components/shared/SettingsRow";
 import {
   Select,
   SelectContent,
@@ -24,11 +27,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/shared/Select";
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "@/components/shared/Avatar";
+import { SettingsRow, SettingsSection } from "@/components/shared/SettingsRow";
+import { Switch } from "@/components/shared/Switch";
 import { currentUser } from "@/data/users";
 import { cn } from "@/lib/utils";
 

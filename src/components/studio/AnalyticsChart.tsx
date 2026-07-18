@@ -1,9 +1,19 @@
-"use client";
+﻿"use client";
 
 import {
-  AreaChart, Area, BarChart, Bar,
-  XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, PieChart, Pie, Cell, Legend,
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 import { formatViews } from "@/lib/utils";
 
@@ -26,13 +36,18 @@ interface TooltipProps {
 function CustomTooltip({ active, payload, label, formatter }: TooltipProps) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 shadow-lg text-xs">
-      {label && <p className="font-semibold text-[var(--text)] mb-1.5">{label}</p>}
+    <div className="rounded-xl border border-border bg-surface px-3 py-2.5 shadow-lg text-xs">
+      {label && (
+        <p className="font-semibold text-text mb-1.5">{label}</p>
+      )}
       {payload.map((p) => (
         <div key={p.name} className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full" style={{ background: p.color }} />
-          <span className="text-[var(--text-secondary)]">{p.name}:</span>
-          <span className="font-medium text-[var(--text)]">
+          <span
+            className="h-2 w-2 rounded-full"
+            style={{ background: p.color }}
+          />
+          <span className="text-text-secondary">{p.name}:</span>
+          <span className="font-medium text-text">
             {formatter ? formatter(p.value) : formatViews(p.value)}
           </span>
         </div>
@@ -53,19 +68,31 @@ interface AreaChartProps {
 }
 
 export function AnalyticsAreaChart({
-  data, dataKey, xKey = "date", color = "var(--primary)",
-  label, formatter, height = 220,
+  data,
+  dataKey,
+  xKey = "date",
+  color = "var(--primary)",
+  label,
+  formatter,
+  height = 220,
 }: AreaChartProps) {
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <AreaChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+      <AreaChart
+        data={data}
+        margin={{ top: 4, right: 4, left: -20, bottom: 0 }}
+      >
         <defs>
           <linearGradient id={`grad-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%"  stopColor={color} stopOpacity={0.15} />
+            <stop offset="5%" stopColor={color} stopOpacity={0.15} />
             <stop offset="95%" stopColor={color} stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+        <CartesianGrid
+          strokeDasharray="3 3"
+          stroke="var(--border)"
+          vertical={false}
+        />
         <XAxis
           dataKey={xKey}
           tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
@@ -111,13 +138,26 @@ interface BarChartProps {
 }
 
 export function AnalyticsBarChart({
-  data, dataKey, xKey = "source", color = "var(--secondary)",
-  label, formatter, height = 220,
+  data,
+  dataKey,
+  xKey = "source",
+  color = "var(--secondary)",
+  label,
+  formatter,
+  height = 220,
 }: BarChartProps) {
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <BarChart data={data} layout="vertical" margin={{ top: 0, right: 4, left: 80, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
+      <BarChart
+        data={data}
+        layout="vertical"
+        margin={{ top: 0, right: 4, left: 80, bottom: 0 }}
+      >
+        <CartesianGrid
+          strokeDasharray="3 3"
+          stroke="var(--border)"
+          horizontal={false}
+        />
         <XAxis
           type="number"
           tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
@@ -137,7 +177,12 @@ export function AnalyticsBarChart({
           content={<CustomTooltip formatter={formatter} />}
           cursor={{ fill: "var(--surface-secondary)" }}
         />
-        <Bar dataKey={dataKey} name={label ?? dataKey} fill={color} radius={[0, 4, 4, 0]} />
+        <Bar
+          dataKey={dataKey}
+          name={label ?? dataKey}
+          fill={color}
+          radius={[0, 4, 4, 0]}
+        />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -170,9 +215,9 @@ export function AnalyticsDonutChart({ data, height = 220 }: DonutChartProps) {
             if (!active || !payload?.length) return null;
             const p = payload[0];
             return (
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 shadow-lg text-xs">
-                <p className="font-semibold text-[var(--text)]">{p.name}</p>
-                <p className="text-[var(--text-secondary)]">{p.value}%</p>
+              <div className="rounded-xl border border-border bg-surface px-3 py-2 shadow-lg text-xs">
+                <p className="font-semibold text-text">{p.name}</p>
+                <p className="text-text-secondary">{p.value}%</p>
               </div>
             );
           }}
@@ -181,7 +226,9 @@ export function AnalyticsDonutChart({ data, height = 220 }: DonutChartProps) {
           iconType="circle"
           iconSize={8}
           formatter={(value) => (
-            <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>{value}</span>
+            <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>
+              {value}
+            </span>
           )}
         />
       </PieChart>

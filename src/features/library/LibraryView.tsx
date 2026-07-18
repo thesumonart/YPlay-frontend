@@ -1,15 +1,15 @@
-"use client";
+﻿"use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Clock, History, ListVideo, Trash2 } from "lucide-react";
-import { mockPlaylists } from "@/data/playlists";
-import { mockHistory, type HistoryEntry } from "@/data/history";
-import { mockVideos } from "@/data/videos";
+import { useState } from "react";
+import { Button } from "@/components/shared/Button";
 import { HistoryCard } from "@/components/shared/HistoryCard";
 import { PlaylistCard } from "@/components/video/PlaylistCard";
 import { VideoCard } from "@/components/video/VideoCard";
-import { Button } from "@/components/shared/Button";
+import { type HistoryEntry, mockHistory } from "@/data/history";
+import { mockPlaylists } from "@/data/playlists";
+import { mockVideos } from "@/data/videos";
 import { cn } from "@/lib/utils";
 
 const TABS = [
@@ -21,7 +21,12 @@ const TABS = [
 type TabId = (typeof TABS)[number]["id"];
 
 // Mock watch-later list (reuse some videos)
-const watchLaterVideos = [mockVideos[1], mockVideos[3], mockVideos[6], mockVideos[10]];
+const watchLaterVideos = [
+  mockVideos[1],
+  mockVideos[3],
+  mockVideos[6],
+  mockVideos[10],
+];
 
 interface LibraryViewProps {
   defaultTab?: TabId;
@@ -44,12 +49,17 @@ export function LibraryView({ defaultTab = "watch-later" }: LibraryViewProps) {
     <div className="flex flex-col gap-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-[var(--text)]">Library</h1>
-        <p className="text-sm text-[var(--text-secondary)] mt-1">Your saved videos and playlists</p>
+        <h1 className="text-2xl font-bold text-text">Library</h1>
+        <p className="text-sm text-text-secondary mt-1">
+          Your saved videos and playlists
+        </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-[var(--border)]" role="tablist">
+      <div
+        className="flex gap-1 border-b border-border"
+        role="tablist"
+      >
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -59,8 +69,8 @@ export function LibraryView({ defaultTab = "watch-later" }: LibraryViewProps) {
             className={cn(
               "relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none",
               activeTab === id
-                ? "text-[var(--text)]"
-                : "text-[var(--text-secondary)] hover:text-[var(--text)]"
+                ? "text-text"
+                : "text-text-secondary hover:text-text",
             )}
           >
             <Icon className="h-4 w-4" />
@@ -68,7 +78,7 @@ export function LibraryView({ defaultTab = "watch-later" }: LibraryViewProps) {
             {activeTab === id && (
               <motion.div
                 layoutId="library-tab-indicator"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--primary)] rounded-full"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
                 transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
               />
             )}
@@ -89,14 +99,15 @@ export function LibraryView({ defaultTab = "watch-later" }: LibraryViewProps) {
           {activeTab === "watch-later" && (
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm text-[var(--text-secondary)]">
-                  {watchLater.length} {watchLater.length === 1 ? "video" : "videos"}
+                <p className="text-sm text-text-secondary">
+                  {watchLater.length}{" "}
+                  {watchLater.length === 1 ? "video" : "videos"}
                 </p>
                 {watchLater.length > 0 && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="gap-1.5 text-[var(--text-secondary)]"
+                    className="gap-1.5 text-text-secondary"
                     onClick={() => setWatchLater([])}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -133,14 +144,15 @@ export function LibraryView({ defaultTab = "watch-later" }: LibraryViewProps) {
           {activeTab === "history" && (
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm text-[var(--text-secondary)]">
-                  {history.length} {history.length === 1 ? "video" : "videos"} watched
+                <p className="text-sm text-text-secondary">
+                  {history.length} {history.length === 1 ? "video" : "videos"}{" "}
+                  watched
                 </p>
                 {history.length > 0 && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="gap-1.5 text-[var(--text-secondary)]"
+                    className="gap-1.5 text-text-secondary"
                     onClick={() => setHistory([])}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -173,8 +185,9 @@ export function LibraryView({ defaultTab = "watch-later" }: LibraryViewProps) {
           {/* Playlists */}
           {activeTab === "playlists" && (
             <div className="flex flex-col gap-4">
-              <p className="text-sm text-[var(--text-secondary)]">
-                {userPlaylists.length} {userPlaylists.length === 1 ? "playlist" : "playlists"}
+              <p className="text-sm text-text-secondary">
+                {userPlaylists.length}{" "}
+                {userPlaylists.length === 1 ? "playlist" : "playlists"}
               </p>
               {userPlaylists.length === 0 ? (
                 <EmptyState
@@ -208,11 +221,11 @@ function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
-      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--surface-secondary)]">
-        <Icon className="h-7 w-7 text-[var(--text-secondary)]" />
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-secondary">
+        <Icon className="h-7 w-7 text-text-secondary" />
       </div>
-      <p className="text-base font-semibold text-[var(--text)]">{title}</p>
-      <p className="text-sm text-[var(--text-secondary)]">{description}</p>
+      <p className="text-base font-semibold text-text">{title}</p>
+      <p className="text-sm text-text-secondary">{description}</p>
     </div>
   );
 }

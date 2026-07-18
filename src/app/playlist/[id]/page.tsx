@@ -1,5 +1,5 @@
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { mockPlaylists } from "@/data/playlists";
 import { PlaylistView } from "@/features/playlist/PlaylistView";
 
@@ -11,13 +11,17 @@ export async function generateStaticParams() {
   return mockPlaylists.map((p) => ({ id: p.id }));
 }
 
-export async function generateMetadata({ params }: PlaylistPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PlaylistPageProps): Promise<Metadata> {
   const { id } = await params;
   const playlist = mockPlaylists.find((p) => p.id === id);
   if (!playlist) return { title: "Playlist not found" };
   return {
     title: playlist.title,
-    description: playlist.description || `${playlist.videos.length} videos · ${playlist.owner.name}`,
+    description:
+      playlist.description ||
+      `${playlist.videos.length} videos · ${playlist.owner.name}`,
   };
 }
 

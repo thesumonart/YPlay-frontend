@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Link2, Check, Code2, Mail } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Check, Code2, Link2, Mail, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface ShareModalProps {
@@ -50,13 +50,19 @@ const SOCIALS = [
   {
     label: "Email",
     icon: Mail,
-    color: "hover:bg-[var(--accent)]/10 hover:text-[var(--accent)]",
+    color: "hover:bg-accent/10 hover:text-accent",
     href: (url: string, title: string) =>
       `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(url)}`,
   },
 ];
 
-export function ShareModal({ open, onClose, url, title, videoId }: ShareModalProps) {
+export function ShareModal({
+  open,
+  onClose,
+  url,
+  title,
+  videoId,
+}: ShareModalProps) {
   const [tab, setTab] = useState<Tab>("Link");
   const [copied, setCopied] = useState(false);
   const [startAt, setStartAt] = useState(false);
@@ -70,13 +76,12 @@ export function ShareModal({ open, onClose, url, title, videoId }: ShareModalPro
     try {
       await navigator.clipboard.writeText(text);
     } catch {
-      // fallback: select input
+      // fallback silent fail
     }
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Close on Escape
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -84,15 +89,16 @@ export function ShareModal({ open, onClose, url, title, videoId }: ShareModalPro
     return () => window.removeEventListener("keydown", handler);
   }, [open, onClose]);
 
-  // Trap focus / prevent body scroll
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [open]);
 
   const inputClass =
-    "flex-1 min-w-0 rounded-lg border border-[var(--border)] bg-[var(--surface-secondary)] px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono";
+    "flex-1 min-w-0 rounded-lg border border-border bg-surface-secondary px-3 py-2 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary font-mono";
 
   return (
     <AnimatePresence>
@@ -119,15 +125,15 @@ export function ShareModal({ open, onClose, url, title, videoId }: ShareModalPro
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl p-6 flex flex-col gap-5"
+            className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-surface shadow-2xl p-6 flex flex-col gap-5"
           >
             {/* Header */}
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-[var(--text)]">Share</h2>
+              <h2 className="text-base font-bold text-text">Share</h2>
               <button
                 onClick={onClose}
                 aria-label="Close"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text)] transition-colors"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-text-secondary hover:bg-surface-secondary hover:text-text transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -143,18 +149,20 @@ export function ShareModal({ open, onClose, url, title, videoId }: ShareModalPro
                   rel="noopener noreferrer"
                   aria-label={`Share on ${label}`}
                   className={cn(
-                    "flex flex-1 flex-col items-center gap-1.5 rounded-xl border border-[var(--border)] py-3 text-[var(--text-secondary)] transition-colors",
-                    color
+                    "flex flex-1 flex-col items-center gap-1.5 rounded-xl border border-border py-3 text-text-secondary transition-colors",
+                    color,
                   )}
                 >
                   <Icon className="h-5 w-5" />
-                  <span className="text-[10px] font-medium">{label.split(" /")[0]}</span>
+                  <span className="text-[10px] font-medium">
+                    {label.split(" /")[0]}
+                  </span>
                 </a>
               ))}
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-1 rounded-lg bg-[var(--surface-secondary)] p-1">
+            <div className="flex gap-1 rounded-lg bg-surface-secondary p-1">
               {TABS.map((t) => (
                 <button
                   key={t}
@@ -162,11 +170,15 @@ export function ShareModal({ open, onClose, url, title, videoId }: ShareModalPro
                   className={cn(
                     "flex flex-1 items-center justify-center gap-1.5 rounded-md py-1.5 text-sm font-medium transition-colors",
                     tab === t
-                      ? "bg-[var(--surface)] text-[var(--text)] shadow-sm"
-                      : "text-[var(--text-secondary)] hover:text-[var(--text)]"
+                      ? "bg-surface text-text shadow-sm"
+                      : "text-text-secondary hover:text-text",
                   )}
                 >
-                  {t === "Link" ? <Link2 className="h-3.5 w-3.5" /> : <Code2 className="h-3.5 w-3.5" />}
+                  {t === "Link" ? (
+                    <Link2 className="h-3.5 w-3.5" />
+                  ) : (
+                    <Code2 className="h-3.5 w-3.5" />
+                  )}
                   {t}
                 </button>
               ))}
@@ -195,11 +207,15 @@ export function ShareModal({ open, onClose, url, title, videoId }: ShareModalPro
                       className={cn(
                         "flex h-10 items-center gap-1.5 rounded-lg px-4 text-sm font-medium transition-colors shrink-0",
                         copied
-                          ? "bg-[var(--success)] text-white"
-                          : "bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)]"
+                          ? "bg-success text-white"
+                          : "bg-primary text-white hover:bg-primary-hover",
                       )}
                     >
-                      {copied ? <Check className="h-4 w-4" /> : <Link2 className="h-4 w-4" />}
+                      {copied ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <Link2 className="h-4 w-4" />
+                      )}
                       {copied ? "Copied!" : "Copy"}
                     </button>
                   </div>
@@ -215,18 +231,18 @@ export function ShareModal({ open, onClose, url, title, videoId }: ShareModalPro
                       className={cn(
                         "h-4 w-4 rounded border-2 flex items-center justify-center transition-colors",
                         startAt
-                          ? "bg-[var(--primary)] border-[var(--primary)]"
-                          : "border-[var(--border)] bg-[var(--surface)]"
+                          ? "bg-primary border-primary"
+                          : "border-border bg-surface",
                       )}
                     >
                       {startAt && <Check className="h-2.5 w-2.5 text-white" />}
                     </div>
-                    <span className="text-sm text-[var(--text)]">Start at</span>
+                    <span className="text-sm text-text">Start at</span>
                     {startAt && (
                       <input
                         value={timestamp}
                         onChange={(e) => setTimestamp(e.target.value)}
-                        className="w-16 rounded-md border border-[var(--border)] bg-[var(--surface-secondary)] px-2 py-0.5 text-sm text-[var(--text)] text-center focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+                        className="w-16 rounded-md border border-border bg-surface-secondary px-2 py-0.5 text-sm text-text text-center focus:outline-none focus:ring-1 focus:ring-primary"
                       />
                     )}
                   </label>
@@ -244,7 +260,10 @@ export function ShareModal({ open, onClose, url, title, videoId }: ShareModalPro
                     readOnly
                     value={embedCode}
                     rows={3}
-                    className={cn(inputClass, "resize-none w-full text-xs leading-relaxed")}
+                    className={cn(
+                      inputClass,
+                      "resize-none w-full text-xs leading-relaxed",
+                    )}
                     onFocus={(e) => e.target.select()}
                   />
                   <button
@@ -252,11 +271,15 @@ export function ShareModal({ open, onClose, url, title, videoId }: ShareModalPro
                     className={cn(
                       "flex h-9 w-full items-center justify-center gap-1.5 rounded-lg text-sm font-medium transition-colors",
                       copied
-                        ? "bg-[var(--success)] text-white"
-                        : "bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)]"
+                        ? "bg-success text-white"
+                        : "bg-primary text-white hover:bg-primary-hover",
                     )}
                   >
-                    {copied ? <Check className="h-4 w-4" /> : <Code2 className="h-4 w-4" />}
+                    {copied ? (
+                      <Check className="h-4 w-4" />
+                    ) : (
+                      <Code2 className="h-4 w-4" />
+                    )}
                     {copied ? "Copied!" : "Copy embed code"}
                   </button>
                 </motion.div>

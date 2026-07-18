@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { MoreVertical, BookmarkPlus, Link2, Ban, Check } from "lucide-react";
+import { Ban, BookmarkPlus, Check, Link2, MoreVertical } from "lucide-react";
+import { useState } from "react";
 import { AddToPlaylistModal } from "@/components/shared/AddToPlaylistModal";
 import { cn } from "@/lib/utils";
 
@@ -69,7 +69,7 @@ export function VideoCardMenu({ videoId, videoTitle }: VideoCardMenuProps) {
             align="end"
             sideOffset={4}
             className={cn(
-              "z-50 min-w-[176px] rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 shadow-xl",
+              "z-50 min-w-[176px] rounded-xl border border-border bg-surface p-1 shadow-xl",
               "data-[state=open]:animate-in data-[state=closed]:animate-out",
               "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
               "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -79,7 +79,7 @@ export function VideoCardMenu({ videoId, videoTitle }: VideoCardMenuProps) {
               <DropdownMenu.Item
                 key={label}
                 onSelect={action}
-                className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[var(--text-secondary)] outline-none transition-colors select-none focus:bg-[var(--surface-secondary)] focus:text-[var(--text)]"
+                className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-text-secondary outline-none transition-colors select-none focus:bg-surface-secondary focus:text-text"
               >
                 <Icon className="h-4 w-4 shrink-0" />
                 {label}

@@ -4,10 +4,7 @@ import { cn } from "@/lib/utils";
 export function SkeletonBox({ className }: { className?: string }) {
   return (
     <div
-      className={cn(
-        "animate-pulse rounded-xl bg-[var(--surface-secondary)]",
-        className
-      )}
+      className={cn("animate-pulse rounded-xl bg-surface-secondary", className)}
     />
   );
 }
@@ -79,7 +76,7 @@ export function WatchPageSkeleton() {
         </div>
 
         {/* Video info */}
-        <div className="flex flex-col gap-3 rounded-xl border border-[var(--border)] p-4">
+        <div className="flex flex-col gap-3 rounded-xl border border-border p-4">
           <SkeletonBox className="h-6 w-3/4" />
           <div className="flex items-center gap-3">
             <SkeletonBox className="h-10 w-10 rounded-full shrink-0" />
@@ -149,7 +146,7 @@ export function ChannelPageSkeleton() {
 
       {/* Channel info */}
       <div className="flex items-end gap-4 -mt-10 px-4">
-        <SkeletonBox className="h-20 w-20 rounded-full shrink-0 ring-4 ring-[var(--background)]" />
+        <SkeletonBox className="h-20 w-20 rounded-full shrink-0 ring-4 ring-background" />
         <div className="flex flex-col gap-2 pb-1 flex-1">
           <SkeletonBox className="h-5 w-48" />
           <SkeletonBox className="h-3 w-32" />
@@ -158,7 +155,7 @@ export function ChannelPageSkeleton() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-[var(--border)] pb-0">
+      <div className="flex gap-1 border-b border-border pb-0">
         {["Videos", "Playlists", "About"].map((t) => (
           <SkeletonBox key={t} className="h-9 w-20 rounded-t-lg" />
         ))}
@@ -218,7 +215,7 @@ export function TrendingPageSkeleton() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-[var(--border)] pb-0">
+      <div className="flex gap-1 border-b border-border pb-0">
         {Array.from({ length: 6 }).map((_, i) => (
           <SkeletonBox key={i} className="h-9 w-20 rounded-t-lg" />
         ))}
@@ -245,7 +242,7 @@ export function TrendingPageSkeleton() {
 
 function TrendingRowSkeleton() {
   return (
-    <div className="flex items-center gap-4 py-2 border-b border-[var(--border)] last:border-0">
+    <div className="flex items-center gap-4 py-2 border-b border-border last:border-0">
       <SkeletonBox className="h-6 w-6 rounded-md shrink-0" />
       <SkeletonBox className="w-36 aspect-video rounded-lg shrink-0" />
       <div className="flex flex-col gap-2 flex-1 min-w-0">
@@ -318,7 +315,7 @@ export function StudioDashboardSkeleton() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 flex flex-col gap-3"
+            className="rounded-xl border border-border bg-surface p-4 flex flex-col gap-3"
           >
             <div className="flex items-center justify-between">
               <SkeletonBox className="h-3 w-20" />
@@ -343,12 +340,12 @@ export function StudioDashboardSkeleton() {
       {/* Table */}
       <div className="flex flex-col gap-3">
         <SkeletonBox className="h-4 w-28" />
-        <div className="rounded-xl border border-[var(--border)] overflow-hidden">
+        <div className="rounded-xl border border-border overflow-hidden">
           <SkeletonBox className="h-10 w-full rounded-none" />
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className="flex items-center gap-4 px-4 py-3 border-t border-[var(--border)]"
+              className="flex items-center gap-4 px-4 py-3 border-t border-border"
             >
               <SkeletonBox className="w-24 aspect-video rounded-lg shrink-0" />
               <div className="flex flex-col gap-2 flex-1">
@@ -377,7 +374,7 @@ export function GenericPageSkeleton() {
       </div>
 
       {/* Filter tabs */}
-      <div className="flex gap-1 border-b border-[var(--border)] pb-0">
+      <div className="flex gap-1 border-b border-border pb-0">
         {Array.from({ length: 4 }).map((_, i) => (
           <SkeletonBox key={i} className="h-9 w-20 rounded-t-lg" />
         ))}
@@ -388,7 +385,7 @@ export function GenericPageSkeleton() {
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className="flex items-center gap-4 rounded-xl border border-[var(--border)] p-4"
+            className="flex items-center gap-4 rounded-xl border border-border p-4"
           >
             <SkeletonBox className="h-10 w-10 rounded-full shrink-0" />
             <div className="flex flex-col gap-2 flex-1">

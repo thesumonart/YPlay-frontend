@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
-import { CheckCircle2, Bell, Share2 } from "lucide-react";
 import { motion } from "framer-motion";
-import type { User } from "@/types";
-import { formatViews } from "@/lib/utils";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/shared/Avatar";
+import { Bell, CheckCircle2, Share2 } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/shared/Avatar";
 import { Button } from "@/components/shared/Button";
+import { formatViews } from "@/lib/utils";
+import type { User } from "@/types";
 
 interface ChannelBannerProps {
   channel: User;
@@ -19,7 +23,7 @@ export function ChannelBanner({ channel }: ChannelBannerProps) {
   return (
     <div className="flex flex-col gap-0">
       {/* Banner */}
-      <div className="relative w-full h-32 sm:h-44 md:h-52 overflow-hidden rounded-2xl bg-[var(--surface-secondary)]">
+      <div className="relative w-full h-32 sm:h-44 md:h-52 overflow-hidden rounded-2xl bg-surface-secondary">
         {channel.banner && (
           <Image
             src={channel.banner}
@@ -36,21 +40,23 @@ export function ChannelBanner({ channel }: ChannelBannerProps) {
       {/* Channel info row */}
       <div className="flex flex-col sm:flex-row sm:items-end gap-4 px-2 -mt-10 sm:-mt-12 relative z-10">
         {/* Avatar */}
-        <Avatar className="h-20 w-20 sm:h-24 sm:w-24 ring-4 ring-[var(--background)] shrink-0">
+        <Avatar className="h-20 w-20 sm:h-24 sm:w-24 ring-4 ring-background shrink-0">
           <AvatarImage src={channel.avatar} alt={channel.name} />
-          <AvatarFallback className="text-3xl">{channel.name[0]}</AvatarFallback>
+          <AvatarFallback className="text-3xl">
+            {channel.name[0]}
+          </AvatarFallback>
         </Avatar>
 
         {/* Name + stats */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between flex-1 gap-3 pb-1">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-[var(--text)]">{channel.name}</h1>
+              <h1 className="text-xl font-bold text-text">{channel.name}</h1>
               {channel.verified && (
-                <CheckCircle2 className="h-5 w-5 text-[var(--secondary)]" />
+                <CheckCircle2 className="h-5 w-5 text-secondary" />
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--text-secondary)]">
+            <div className="flex flex-wrap items-center gap-2 text-sm text-text-secondary">
               <span>{channel.handle}</span>
               <span>·</span>
               <span>{formatViews(channel.subscribers)} subscribers</span>

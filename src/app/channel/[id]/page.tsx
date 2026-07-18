@@ -1,5 +1,5 @@
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { mockUsers } from "@/data/users";
 import { ChannelView } from "@/features/channel/ChannelView";
 
@@ -11,7 +11,9 @@ export async function generateStaticParams() {
   return mockUsers.map((u) => ({ id: u.id }));
 }
 
-export async function generateMetadata({ params }: ChannelPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: ChannelPageProps): Promise<Metadata> {
   const { id } = await params;
   const channel = mockUsers.find((u) => u.id === id);
   if (!channel) return { title: "Channel not found" };

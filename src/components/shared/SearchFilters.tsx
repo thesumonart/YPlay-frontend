@@ -1,8 +1,8 @@
 "use client";
 
 import { SlidersHorizontal, X } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/shared/Button";
+import { cn } from "@/lib/utils";
 
 export interface SearchFilters {
   sort: "relevance" | "date" | "views" | "rating";
@@ -28,7 +28,9 @@ interface FilterGroupProps {
 function FilterGroup({ label, options, value, onChange }: FilterGroupProps) {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-xs font-semibold text-[var(--text-secondary)] shrink-0 w-24">{label}</span>
+      <span className="text-xs font-semibold text-text-secondary shrink-0 w-24">
+        {label}
+      </span>
       <div className="flex flex-wrap gap-1.5">
         {options.map((opt) => (
           <button
@@ -37,8 +39,8 @@ function FilterGroup({ label, options, value, onChange }: FilterGroupProps) {
             className={cn(
               "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors",
               value === opt.value
-                ? "bg-[var(--text)] text-[var(--background)]"
-                : "bg-[var(--surface-secondary)] text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--border)]"
+                ? "bg-text text-background"
+                : "bg-surface-secondary text-text-secondary hover:text-text hover:bg-border",
             )}
           >
             {opt.label}
@@ -57,9 +59,17 @@ interface SearchFiltersProps {
 }
 
 const hasActiveFilters = (f: SearchFilters) =>
-  f.sort !== "relevance" || f.uploadDate !== "any" || f.type !== "all" || f.duration !== "any";
+  f.sort !== "relevance" ||
+  f.uploadDate !== "any" ||
+  f.type !== "all" ||
+  f.duration !== "any";
 
-export function SearchFiltersPanel({ filters, onChange, open, onToggle }: SearchFiltersProps) {
+export function SearchFiltersPanel({
+  filters,
+  onChange,
+  open,
+  onToggle,
+}: SearchFiltersProps) {
   const active = hasActiveFilters(filters);
 
   return (
@@ -84,7 +94,7 @@ export function SearchFiltersPanel({ filters, onChange, open, onToggle }: Search
             variant="ghost"
             size="sm"
             onClick={() => onChange(defaultFilters)}
-            className="gap-1.5 text-[var(--text-secondary)]"
+            className="gap-1.5 text-text-secondary"
           >
             <X className="h-3 w-3" />
             Clear
@@ -93,7 +103,7 @@ export function SearchFiltersPanel({ filters, onChange, open, onToggle }: Search
       </div>
 
       {open && (
-        <div className="flex flex-col gap-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+        <div className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4">
           <FilterGroup
             label="Sort by"
             options={[
@@ -103,7 +113,9 @@ export function SearchFiltersPanel({ filters, onChange, open, onToggle }: Search
               { value: "rating", label: "Rating" },
             ]}
             value={filters.sort}
-            onChange={(v) => onChange({ ...filters, sort: v as SearchFilters["sort"] })}
+            onChange={(v) =>
+              onChange({ ...filters, sort: v as SearchFilters["sort"] })
+            }
           />
           <FilterGroup
             label="Upload date"
@@ -116,7 +128,12 @@ export function SearchFiltersPanel({ filters, onChange, open, onToggle }: Search
               { value: "year", label: "This year" },
             ]}
             value={filters.uploadDate}
-            onChange={(v) => onChange({ ...filters, uploadDate: v as SearchFilters["uploadDate"] })}
+            onChange={(v) =>
+              onChange({
+                ...filters,
+                uploadDate: v as SearchFilters["uploadDate"],
+              })
+            }
           />
           <FilterGroup
             label="Type"
@@ -127,7 +144,9 @@ export function SearchFiltersPanel({ filters, onChange, open, onToggle }: Search
               { value: "playlist", label: "Playlist" },
             ]}
             value={filters.type}
-            onChange={(v) => onChange({ ...filters, type: v as SearchFilters["type"] })}
+            onChange={(v) =>
+              onChange({ ...filters, type: v as SearchFilters["type"] })
+            }
           />
           <FilterGroup
             label="Duration"
@@ -138,7 +157,9 @@ export function SearchFiltersPanel({ filters, onChange, open, onToggle }: Search
               { value: "long", label: "Over 20 min" },
             ]}
             value={filters.duration}
-            onChange={(v) => onChange({ ...filters, duration: v as SearchFilters["duration"] })}
+            onChange={(v) =>
+              onChange({ ...filters, duration: v as SearchFilters["duration"] })
+            }
           />
         </div>
       )}

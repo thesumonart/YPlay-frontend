@@ -6,7 +6,8 @@ export const mockPlaylists: Playlist[] = [
   {
     id: "pl1",
     title: "Web Dev Essentials 2025",
-    description: "Everything you need to build modern web apps — from routing to styling.",
+    description:
+      "Everything you need to build modern web apps — from routing to styling.",
     thumbnail: "https://picsum.photos/seed/v6/640/360",
     videos: [mockVideos[5], mockVideos[7], mockVideos[11]],
     owner: mockUsers[0],
@@ -39,7 +40,8 @@ export const mockPlaylists: Playlist[] = [
   {
     id: "pl4",
     title: "Design & UI Deep Dives",
-    description: "In-depth explorations of design systems, UI patterns, and visual craft.",
+    description:
+      "In-depth explorations of design systems, UI patterns, and visual craft.",
     thumbnail: "https://picsum.photos/seed/v1/640/360",
     videos: [mockVideos[0], mockVideos[11]],
     owner: mockUsers[0],
@@ -50,7 +52,8 @@ export const mockPlaylists: Playlist[] = [
   {
     id: "pl5",
     title: "Animation & Motion",
-    description: "Everything about Framer Motion, CSS animations, and interactive UI.",
+    description:
+      "Everything about Framer Motion, CSS animations, and interactive UI.",
     thumbnail: "https://picsum.photos/seed/v12/640/360",
     videos: [mockVideos[11]],
     owner: mockUsers[0],
@@ -61,7 +64,8 @@ export const mockPlaylists: Playlist[] = [
   {
     id: "pl6",
     title: "Full-Stack Crash Course",
-    description: "From zero to deployed — Next.js, Tailwind, databases, and deployment.",
+    description:
+      "From zero to deployed — Next.js, Tailwind, databases, and deployment.",
     thumbnail: "https://picsum.photos/seed/v8/640/360",
     videos: [mockVideos[5], mockVideos[7]],
     owner: mockUsers[0],

@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { mockVideos } from "@/data/videos";
+import { notFound } from "next/navigation";
 import { mockComments } from "@/data/comments";
+import { mockVideos } from "@/data/videos";
 import { WatchView } from "@/features/watch/WatchView";
 
 interface WatchPageProps {
@@ -12,7 +12,9 @@ export async function generateStaticParams() {
   return mockVideos.map((v) => ({ id: v.id }));
 }
 
-export async function generateMetadata({ params }: WatchPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: WatchPageProps): Promise<Metadata> {
   const { id } = await params;
   const video = mockVideos.find((v) => v.id === id);
   if (!video) return { title: "Video not found" };
@@ -31,11 +33,5 @@ export default async function WatchPage({ params }: WatchPageProps) {
     .filter((v) => v.id !== id && !v.isShort)
     .slice(0, 10);
 
-  return (
-    <WatchView
-      video={video}
-      upNext={upNext}
-      comments={mockComments}
-    />
-  );
+  return <WatchView video={video} upNext={upNext} comments={mockComments} />;
 }

@@ -1,32 +1,36 @@
-"use client";
+﻿"use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  Search,
-  X,
-  Trash2,
-  Pin,
-  PinOff,
   CheckCheck,
-  MessageSquare,
   ChevronDown,
   ChevronUp,
-  ThumbsUp,
   CornerDownRight,
+  MessageSquare,
+  Pin,
+  PinOff,
+  Search,
+  ThumbsUp,
+  Trash2,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useCallback, useMemo, useState } from "react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/shared/Avatar";
+import { Button } from "@/components/shared/Button";
 import { mockComments } from "@/data/comments";
 import { mockVideos } from "@/data/videos";
-import { Button } from "@/components/shared/Button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/shared/Avatar";
 import { cn, formatViews, timeAgo } from "@/lib/utils";
 import type { Comment } from "@/types";
 
 // Only comments on videos owned by u1
 const myVideoIds = new Set(
-  mockVideos.filter((v) => v.channel.id === "u1").map((v) => v.id)
+  mockVideos.filter((v) => v.channel.id === "u1").map((v) => v.id),
 );
 const myVideos = mockVideos.filter((v) => v.channel.id === "u1" && !v.isShort);
 
@@ -49,7 +53,9 @@ export function StudioCommentsView() {
   const [readFilter, setReadFilter] = useState<ReadFilter>("all");
   const [videoFilter, setVideoFilter] = useState<string>("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());
+  const [expandedReplies, setExpandedReplies] = useState<Set<string>>(
+    new Set(),
+  );
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
 
@@ -73,7 +79,7 @@ export function StudioCommentsView() {
 
   const unreadCount = useMemo(
     () => comments.filter((c) => !c.deleted && !c.read).length,
-    [comments]
+    [comments],
   );
 
   const counts: Record<ReadFilter, number> = useMemo(
@@ -82,16 +88,14 @@ export function StudioCommentsView() {
       unread: comments.filter((c) => !c.deleted && !c.read).length,
       read: comments.filter((c) => !c.deleted && c.read).length,
     }),
-    [comments]
+    [comments],
   );
 
   const allSelected =
     visible.length > 0 && visible.every((c) => selected.has(c.id));
 
   const toggleAll = useCallback(() => {
-    setSelected(
-      allSelected ? new Set() : new Set(visible.map((c) => c.id))
-    );
+    setSelected(allSelected ? new Set() : new Set(visible.map((c) => c.id)));
   }, [allSelected, visible]);
 
   const toggleOne = useCallback((id: string) => {
@@ -104,21 +108,21 @@ export function StudioCommentsView() {
 
   const markRead = useCallback((ids: string[]) => {
     setComments((prev) =>
-      prev.map((c) => (ids.includes(c.id) ? { ...c, read: true } : c))
+      prev.map((c) => (ids.includes(c.id) ? { ...c, read: true } : c)),
     );
     setSelected(new Set());
   }, []);
 
   const deleteComments = useCallback((ids: string[]) => {
     setComments((prev) =>
-      prev.map((c) => (ids.includes(c.id) ? { ...c, deleted: true } : c))
+      prev.map((c) => (ids.includes(c.id) ? { ...c, deleted: true } : c)),
     );
     setSelected(new Set());
   }, []);
 
   const togglePin = useCallback((id: string) => {
     setComments((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, isPinned: !c.isPinned } : c))
+      prev.map((c) => (c.id === id ? { ...c, isPinned: !c.isPinned } : c)),
     );
   }, []);
 
@@ -136,12 +140,12 @@ export function StudioCommentsView() {
       setReplyingTo(null);
       setReplyText("");
     },
-    [replyText]
+    [replyText],
   );
 
   const videoForComment = useCallback(
     (videoId: string) => mockVideos.find((v) => v.id === videoId),
-    []
+    [],
   );
 
   return (
@@ -149,11 +153,11 @@ export function StudioCommentsView() {
       {/* Header */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-xl font-bold text-[var(--text)]">Comments</h1>
-          <p className="text-sm text-[var(--text-secondary)] mt-0.5">
+          <h1 className="text-xl font-bold text-text">Comments</h1>
+          <p className="text-sm text-text-secondary mt-0.5">
             {unreadCount > 0 ? (
               <>
-                <span className="font-medium text-[var(--primary)]">
+                <span className="font-medium text-primary">
                   {unreadCount} unread
                 </span>{" "}
                 · {counts.all} total
@@ -169,7 +173,9 @@ export function StudioCommentsView() {
             size="sm"
             className="gap-1.5"
             onClick={() =>
-              markRead(comments.filter((c) => !c.read && !c.deleted).map((c) => c.id))
+              markRead(
+                comments.filter((c) => !c.read && !c.deleted).map((c) => c.id),
+              )
             }
           >
             <CheckCheck className="h-3.5 w-3.5" />
@@ -179,7 +185,10 @@ export function StudioCommentsView() {
       </div>
 
       {/* Read filter tabs */}
-      <div className="flex gap-1 border-b border-[var(--border)]" role="tablist">
+      <div
+        className="flex gap-1 border-b border-border"
+        role="tablist"
+      >
         {(["all", "unread", "read"] as ReadFilter[]).map((f) => (
           <button
             key={f}
@@ -192,15 +201,17 @@ export function StudioCommentsView() {
             className={cn(
               "relative flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium capitalize transition-colors focus-visible:outline-none shrink-0",
               readFilter === f
-                ? "text-[var(--text)]"
-                : "text-[var(--text-secondary)] hover:text-[var(--text)]"
+                ? "text-text"
+                : "text-text-secondary hover:text-text",
             )}
           >
             {f}
             <span
               className={cn(
                 "text-[10px] font-semibold tabular-nums",
-                readFilter === f ? "text-[var(--text-secondary)]" : "text-[var(--border)]"
+                readFilter === f
+                  ? "text-text-secondary"
+                  : "text-border",
               )}
             >
               {counts[f]}
@@ -208,7 +219,7 @@ export function StudioCommentsView() {
             {readFilter === f && (
               <motion.div
                 layoutId="comments-tab-indicator"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--primary)] rounded-full"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
                 transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
               />
             )}
@@ -219,23 +230,23 @@ export function StudioCommentsView() {
       {/* Search + video filter */}
       <div className="flex items-center gap-2 flex-wrap">
         <div className="relative flex-1 min-w-48">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-secondary)] pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary pointer-events-none" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search comments..."
             aria-label="Search comments"
             className={cn(
-              "h-9 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)]",
-              "pl-9 pr-8 text-sm text-[var(--text)] placeholder:text-[var(--text-secondary)]",
-              "focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all"
+              "h-9 w-full rounded-lg border border-border bg-surface",
+              "pl-9 pr-8 text-sm text-text placeholder:text-text-secondary",
+              "focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all",
             )}
           />
           {query && (
             <button
               onClick={() => setQuery("")}
               aria-label="Clear search"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text transition-colors"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -250,9 +261,9 @@ export function StudioCommentsView() {
           }}
           aria-label="Filter by video"
           className={cn(
-            "h-9 rounded-lg border border-[var(--border)] bg-[var(--surface)]",
-            "px-3 text-sm text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] transition-all",
-            "max-w-[200px] truncate"
+            "h-9 rounded-lg border border-border bg-surface",
+            "px-3 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary transition-all",
+            "max-w-[200px] truncate",
           )}
         >
           <option value="all">All videos</option>
@@ -272,16 +283,16 @@ export function StudioCommentsView() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-secondary)] px-4 py-2.5"
+            className="flex items-center gap-3 rounded-xl border border-border bg-surface-secondary px-4 py-2.5"
           >
-            <span className="text-sm font-medium text-[var(--text)]">
+            <span className="text-sm font-medium text-text">
               {selected.size} selected
             </span>
             <div className="flex items-center gap-2 ml-auto">
               <Button
                 variant="ghost"
                 size="sm"
-                className="gap-1.5 text-[var(--text-secondary)]"
+                className="gap-1.5 text-text-secondary"
                 onClick={() => markRead([...selected])}
               >
                 <CheckCheck className="h-3.5 w-3.5" />
@@ -290,7 +301,7 @@ export function StudioCommentsView() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="gap-1.5 text-[var(--danger)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10"
+                className="gap-1.5 text-danger hover:text-danger hover:bg-danger/10"
                 onClick={() => deleteComments([...selected])}
               >
                 <Trash2 className="h-3.5 w-3.5" />
@@ -300,7 +311,7 @@ export function StudioCommentsView() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setSelected(new Set())}
-                className="text-[var(--text-secondary)]"
+                className="text-text-secondary"
               >
                 <X className="h-3.5 w-3.5" />
                 Cancel
@@ -320,13 +331,13 @@ export function StudioCommentsView() {
             exit={{ opacity: 0 }}
             className="flex flex-col items-center justify-center py-24 gap-3 text-center"
           >
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--surface-secondary)]">
-              <MessageSquare className="h-6 w-6 text-[var(--text-secondary)]" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-secondary">
+              <MessageSquare className="h-6 w-6 text-text-secondary" />
             </div>
-            <p className="text-base font-semibold text-[var(--text)]">
+            <p className="text-base font-semibold text-text">
               No comments found
             </p>
-            <p className="text-sm text-[var(--text-secondary)]">
+            <p className="text-sm text-text-secondary">
               Try a different search or filter
             </p>
           </motion.div>
@@ -336,21 +347,21 @@ export function StudioCommentsView() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col gap-0 rounded-xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden"
+            className="flex flex-col gap-0 rounded-xl border border-border bg-surface overflow-hidden"
           >
             {/* Table header */}
-            <div className="flex items-center gap-3 border-b border-[var(--border)] bg-[var(--surface-secondary)] px-4 py-2.5">
+            <div className="flex items-center gap-3 border-b border-border bg-surface-secondary px-4 py-2.5">
               <input
                 type="checkbox"
                 checked={allSelected}
                 onChange={toggleAll}
                 aria-label="Select all comments"
-                className="h-4 w-4 rounded border-[var(--border)] accent-[var(--primary)] cursor-pointer shrink-0"
+                className="h-4 w-4 rounded border-border accent-primary cursor-pointer shrink-0"
               />
-              <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
+              <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
                 Comment
               </span>
-              <span className="ml-auto text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider hidden sm:block">
+              <span className="ml-auto text-xs font-semibold text-text-secondary uppercase tracking-wider hidden sm:block">
                 Video
               </span>
             </div>
@@ -371,12 +382,12 @@ export function StudioCommentsView() {
                     exit={{ opacity: 0, height: 0, overflow: "hidden" }}
                     transition={{ duration: 0.2, delay: i * 0.02 }}
                     className={cn(
-                      "border-b border-[var(--border)] last:border-0 transition-colors",
+                      "border-b border-border last:border-0 transition-colors",
                       isSelected
-                        ? "bg-[var(--primary)]/5"
+                        ? "bg-primary/5"
                         : !comment.read
-                        ? "bg-[var(--surface-secondary)]/40"
-                        : "hover:bg-[var(--surface-secondary)]/30"
+                          ? "bg-surface-secondary/40"
+                          : "hover:bg-surface-secondary/30",
                     )}
                   >
                     <div className="flex gap-3 px-4 py-4">
@@ -386,13 +397,13 @@ export function StudioCommentsView() {
                         checked={isSelected}
                         onChange={() => toggleOne(comment.id)}
                         aria-label={`Select comment by ${comment.author.name}`}
-                        className="h-4 w-4 rounded border-[var(--border)] accent-[var(--primary)] cursor-pointer shrink-0 mt-1"
+                        className="h-4 w-4 rounded border-border accent-primary cursor-pointer shrink-0 mt-1"
                       />
 
                       {/* Unread dot */}
                       <div className="flex items-start pt-2 shrink-0 w-2">
                         {!comment.read && (
-                          <div className="h-2 w-2 rounded-full bg-[var(--primary)] shrink-0" />
+                          <div className="h-2 w-2 rounded-full bg-primary shrink-0" />
                         )}
                       </div>
 
@@ -411,33 +422,33 @@ export function StudioCommentsView() {
                       <div className="flex flex-col gap-1.5 flex-1 min-w-0">
                         {/* Author + meta */}
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm font-semibold text-[var(--text)]">
+                          <span className="text-sm font-semibold text-text">
                             {comment.author.name}
                           </span>
                           {comment.isPinned && (
-                            <span className="flex items-center gap-1 text-[11px] text-[var(--text-secondary)] bg-[var(--surface-secondary)] rounded-md px-1.5 py-0.5">
+                            <span className="flex items-center gap-1 text-[11px] text-text-secondary bg-surface-secondary rounded-md px-1.5 py-0.5">
                               <Pin className="h-2.5 w-2.5" />
                               Pinned
                             </span>
                           )}
                           {!comment.read && (
-                            <span className="text-[11px] font-semibold text-[var(--primary)] bg-[var(--primary)]/10 rounded-md px-1.5 py-0.5">
+                            <span className="text-[11px] font-semibold text-primary bg-primary/10 rounded-md px-1.5 py-0.5">
                               New
                             </span>
                           )}
-                          <span className="text-xs text-[var(--text-secondary)]">
+                          <span className="text-xs text-text-secondary">
                             {timeAgo(comment.publishedAt)}
                           </span>
                         </div>
 
                         {/* Comment text */}
-                        <p className="text-sm text-[var(--text)] leading-relaxed">
+                        <p className="text-sm text-text leading-relaxed">
                           {comment.content}
                         </p>
 
                         {/* Actions row */}
                         <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                          <span className="flex items-center gap-1 text-xs text-[var(--text-secondary)]">
+                          <span className="flex items-center gap-1 text-xs text-text-secondary">
                             <ThumbsUp className="h-3 w-3" />
                             {formatViews(comment.likes)}
                           </span>
@@ -447,7 +458,7 @@ export function StudioCommentsView() {
                               setReplyingTo(isReplying ? null : comment.id);
                               setReplyText("");
                             }}
-                            className="flex items-center gap-1 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors"
+                            className="flex items-center gap-1 text-xs font-medium text-text-secondary hover:text-text transition-colors"
                           >
                             <CornerDownRight className="h-3 w-3" />
                             Reply
@@ -455,7 +466,7 @@ export function StudioCommentsView() {
 
                           <button
                             onClick={() => togglePin(comment.id)}
-                            className="flex items-center gap-1 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors"
+                            className="flex items-center gap-1 text-xs font-medium text-text-secondary hover:text-text transition-colors"
                           >
                             {comment.isPinned ? (
                               <>
@@ -473,7 +484,7 @@ export function StudioCommentsView() {
                           {!comment.read && (
                             <button
                               onClick={() => markRead([comment.id])}
-                              className="flex items-center gap-1 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors"
+                              className="flex items-center gap-1 text-xs font-medium text-text-secondary hover:text-text transition-colors"
                             >
                               <CheckCheck className="h-3 w-3" />
                               Mark read
@@ -482,7 +493,7 @@ export function StudioCommentsView() {
 
                           <button
                             onClick={() => deleteComments([comment.id])}
-                            className="flex items-center gap-1 text-xs font-medium text-[var(--danger)]/70 hover:text-[var(--danger)] transition-colors"
+                            className="flex items-center gap-1 text-xs font-medium text-danger/70 hover:text-danger transition-colors"
                           >
                             <Trash2 className="h-3 w-3" />
                             Delete
@@ -517,9 +528,9 @@ export function StudioCommentsView() {
                                   placeholder={`Reply to ${comment.author.name}…`}
                                   aria-label="Write a reply"
                                   className={cn(
-                                    "flex-1 h-9 rounded-lg border border-[var(--border)] bg-[var(--surface-secondary)]",
-                                    "px-3 text-sm text-[var(--text)] placeholder:text-[var(--text-secondary)]",
-                                    "focus:outline-none focus:ring-2 focus:ring-[var(--primary)] transition-all"
+                                    "flex-1 h-9 rounded-lg border border-border bg-surface-secondary",
+                                    "px-3 text-sm text-text placeholder:text-text-secondary",
+                                    "focus:outline-none focus:ring-2 focus:ring-primary transition-all",
                                   )}
                                 />
                                 <Button
@@ -549,7 +560,7 @@ export function StudioCommentsView() {
                           <div className="mt-1">
                             <button
                               onClick={() => toggleReplies(comment.id)}
-                              className="flex items-center gap-1.5 text-xs font-semibold text-[var(--secondary)] hover:text-[var(--primary)] transition-colors"
+                              className="flex items-center gap-1.5 text-xs font-semibold text-secondary hover:text-primary transition-colors"
                             >
                               {repliesExpanded ? (
                                 <ChevronUp className="h-3.5 w-3.5" />
@@ -557,7 +568,9 @@ export function StudioCommentsView() {
                                 <ChevronDown className="h-3.5 w-3.5" />
                               )}
                               {comment.replies.length}{" "}
-                              {comment.replies.length === 1 ? "reply" : "replies"}
+                              {comment.replies.length === 1
+                                ? "reply"
+                                : "replies"}
                             </button>
 
                             <AnimatePresence>
@@ -569,7 +582,7 @@ export function StudioCommentsView() {
                                   transition={{ duration: 0.2 }}
                                   className="overflow-hidden"
                                 >
-                                  <div className="flex flex-col gap-3 mt-3 pl-4 border-l-2 border-[var(--border)]">
+                                  <div className="flex flex-col gap-3 mt-3 pl-4 border-l-2 border-border">
                                     {comment.replies.map((reply) => (
                                       <div
                                         key={reply.id}
@@ -586,17 +599,17 @@ export function StudioCommentsView() {
                                         </Avatar>
                                         <div className="flex flex-col gap-0.5 min-w-0">
                                           <div className="flex items-center gap-2">
-                                            <span className="text-xs font-semibold text-[var(--text)]">
+                                            <span className="text-xs font-semibold text-text">
                                               {reply.author.name}
                                             </span>
-                                            <span className="text-[11px] text-[var(--text-secondary)]">
+                                            <span className="text-[11px] text-text-secondary">
                                               {timeAgo(reply.publishedAt)}
                                             </span>
                                           </div>
-                                          <p className="text-xs text-[var(--text)] leading-relaxed">
+                                          <p className="text-xs text-text leading-relaxed">
                                             {reply.content}
                                           </p>
-                                          <span className="flex items-center gap-1 text-[11px] text-[var(--text-secondary)] mt-0.5">
+                                          <span className="flex items-center gap-1 text-[11px] text-text-secondary mt-0.5">
                                             <ThumbsUp className="h-2.5 w-2.5" />
                                             {formatViews(reply.likes)}
                                           </span>
@@ -618,7 +631,7 @@ export function StudioCommentsView() {
                           className="hidden sm:flex items-start gap-2 shrink-0 group/video"
                           title={video.title}
                         >
-                          <div className="relative w-20 aspect-video rounded-lg overflow-hidden bg-[var(--surface-secondary)] shrink-0">
+                          <div className="relative w-20 aspect-video rounded-lg overflow-hidden bg-surface-secondary shrink-0">
                             <Image
                               src={video.thumbnail}
                               alt={video.title}
@@ -627,7 +640,7 @@ export function StudioCommentsView() {
                               className="object-cover transition-opacity group-hover/video:opacity-80"
                             />
                           </div>
-                          <p className="text-xs text-[var(--text-secondary)] line-clamp-2 max-w-[120px] group-hover/video:text-[var(--text)] transition-colors leading-snug">
+                          <p className="text-xs text-text-secondary line-clamp-2 max-w-[120px] group-hover/video:text-text transition-colors leading-snug">
                             {video.title}
                           </p>
                         </Link>
@@ -639,20 +652,20 @@ export function StudioCommentsView() {
             </AnimatePresence>
 
             {/* Footer */}
-            <div className="border-t border-[var(--border)] px-4 py-3 flex items-center justify-between bg-[var(--surface-secondary)]/50">
-              <p className="text-xs text-[var(--text-secondary)]">
+            <div className="border-t border-border px-4 py-3 flex items-center justify-between bg-surface-secondary/50">
+              <p className="text-xs text-text-secondary">
                 Showing{" "}
-                <span className="font-medium text-[var(--text)]">
+                <span className="font-medium text-text">
                   {visible.length}
                 </span>{" "}
                 of{" "}
-                <span className="font-medium text-[var(--text)]">
+                <span className="font-medium text-text">
                   {counts.all}
                 </span>{" "}
                 comments
               </p>
               {selected.size > 0 && (
-                <p className="text-xs text-[var(--primary)] font-medium">
+                <p className="text-xs text-primary font-medium">
                   {selected.size} selected
                 </p>
               )}

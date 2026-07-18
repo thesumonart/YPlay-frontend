@@ -1,15 +1,21 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
-import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  Play, Pause, Volume2, VolumeX, Maximize, Settings,
-  SkipForward, SkipBack, Keyboard,
+  Keyboard,
+  Maximize,
+  Pause,
+  Play,
+  Settings,
+  SkipBack,
+  SkipForward,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { cn, formatDuration } from "@/lib/utils";
 import type { Video } from "@/types";
-import { formatDuration } from "@/lib/utils";
-import { cn } from "@/lib/utils";
 
 interface VideoPlayerProps {
   video: Video;
@@ -29,7 +35,12 @@ const SHORTCUTS = [
   { keys: ["?"], label: "Show shortcuts" },
 ];
 
-export function VideoPlayer({ video, onEnded, autoplay = true, onAutoplayToggle }: VideoPlayerProps) {
+export function VideoPlayer({
+  video,
+  onEnded,
+  autoplay = true,
+  onAutoplayToggle,
+}: VideoPlayerProps) {
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -39,13 +50,16 @@ export function VideoPlayer({ video, onEnded, autoplay = true, onAutoplayToggle 
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const nudge = useCallback((seconds: number) => {
-    setProgress((p) => {
-      const next = Math.max(0, Math.min(1, p + seconds / video.duration));
-      if (next >= 1) onEnded?.();
-      return next;
-    });
-  }, [video.duration, onEnded]);
+  const nudge = useCallback(
+    (seconds: number) => {
+      setProgress((p) => {
+        const next = Math.max(0, Math.min(1, p + seconds / video.duration));
+        if (next >= 1) onEnded?.();
+        return next;
+      });
+    },
+    [video.duration, onEnded],
+  );
 
   const togglePlay = useCallback(() => {
     setPlaying((p) => !p);
@@ -54,17 +68,21 @@ export function VideoPlayer({ video, onEnded, autoplay = true, onAutoplayToggle 
     setShowControls(true);
     if (controlsTimer.current) clearTimeout(controlsTimer.current);
     setPlaying((p) => {
-      if (p) controlsTimer.current = setTimeout(() => setShowControls(false), 2500);
+      if (p)
+        controlsTimer.current = setTimeout(() => setShowControls(false), 2500);
       return p;
     });
   }, []);
 
-  // Keyboard shortcuts — only when player is focused/hovered
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      // Don't fire when typing in inputs
       const tag = (e.target as HTMLElement).tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement).isContentEditable) return;
+      if (
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        (e.target as HTMLElement).isContentEditable
+      )
+        return;
 
       switch (e.key) {
         case "k":
@@ -75,8 +93,10 @@ export function VideoPlayer({ video, onEnded, autoplay = true, onAutoplayToggle 
           setTimeout(() => setShowPlayPulse(false), 600);
           break;
         case " ":
-          // Only intercept space if player container is focused
-          if (containerRef.current?.contains(document.activeElement) || document.activeElement === document.body) {
+          if (
+            containerRef.current?.contains(document.activeElement) ||
+            document.activeElement === document.body
+          ) {
             e.preventDefault();
             setPlaying((p) => !p);
             setShowPlayPulse(true);
@@ -110,7 +130,8 @@ export function VideoPlayer({ video, onEnded, autoplay = true, onAutoplayToggle 
         case "F":
           e.preventDefault();
           if (containerRef.current) {
-            if (!document.fullscreenElement) containerRef.current.requestFullscreen().catch(() => {});
+            if (!document.fullscreenElement)
+              containerRef.current.requestFullscreen().catch(() => {});
             else document.exitFullscreen().catch(() => {});
           }
           break;
@@ -161,13 +182,20 @@ export function VideoPlayer({ video, onEnded, autoplay = true, onAutoplayToggle 
         fill
         priority
         sizes="(max-width: 1024px) 100vw, 70vw"
-        className={cn("object-cover transition-opacity duration-300", playing && "opacity-60")}
+        className={cn(
+          "object-cover transition-opacity duration-300",
+          playing && "opacity-60",
+        )}
       />
 
       {/* Click overlay */}
       <div
         className="absolute inset-0 cursor-pointer"
-        onClick={() => { setPlaying((p) => !p); setShowPlayPulse(true); setTimeout(() => setShowPlayPulse(false), 600); }}
+        onClick={() => {
+          setPlaying((p) => !p);
+          setShowPlayPulse(true);
+          setTimeout(() => setShowPlayPulse(false), 600);
+        }}
         role="button"
         aria-label={playing ? "Pause" : "Play"}
         tabIndex={0}
@@ -186,9 +214,11 @@ export function VideoPlayer({ video, onEnded, autoplay = true, onAutoplayToggle 
             className="pointer-events-none absolute inset-0 flex items-center justify-center"
           >
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20">
-              {playing
-                ? <Pause className="h-7 w-7 fill-white text-white" />
-                : <Play className="h-7 w-7 fill-white text-white" />}
+              {playing ? (
+                <Pause className="h-7 w-7 fill-white text-white" />
+              ) : (
+                <Play className="h-7 w-7 fill-white text-white" />
+              )}
             </div>
           </motion.div>
         )}
@@ -220,11 +250,16 @@ export function VideoPlayer({ video, onEnded, autoplay = true, onAutoplayToggle 
             >
               <div className="flex items-center gap-2 mb-4">
                 <Keyboard className="h-4 w-4 text-white/60" />
-                <span className="text-sm font-semibold text-white">Keyboard shortcuts</span>
+                <span className="text-sm font-semibold text-white">
+                  Keyboard shortcuts
+                </span>
               </div>
               <div className="flex flex-col gap-2">
                 {SHORTCUTS.map(({ keys, label }) => (
-                  <div key={label} className="flex items-center justify-between gap-4">
+                  <div
+                    key={label}
+                    className="flex items-center justify-between gap-4"
+                  >
                     <span className="text-xs text-white/60">{label}</span>
                     <div className="flex items-center gap-1">
                       {keys.map((k) => (
@@ -239,7 +274,9 @@ export function VideoPlayer({ video, onEnded, autoplay = true, onAutoplayToggle 
                   </div>
                 ))}
               </div>
-              <p className="mt-4 text-center text-[11px] text-white/30">Press ? or click anywhere to close</p>
+              <p className="mt-4 text-center text-[11px] text-white/30">
+                Press ? or click anywhere to close
+              </p>
             </div>
           </motion.div>
         )}
@@ -267,7 +304,7 @@ export function VideoPlayer({ video, onEnded, autoplay = true, onAutoplayToggle 
               tabIndex={0}
             >
               <div
-                className="h-full rounded-full bg-[var(--primary)] relative"
+                className="h-full rounded-full bg-primary relative"
                 style={{ width: `${progress * 100}%` }}
               >
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 h-3 w-3 rounded-full bg-white opacity-0 group-hover/bar:opacity-100 transition-opacity" />
@@ -276,17 +313,43 @@ export function VideoPlayer({ video, onEnded, autoplay = true, onAutoplayToggle 
 
             {/* Controls row */}
             <div className="flex items-center gap-3">
-              <button onClick={() => { setPlaying((p) => !p); }} aria-label={playing ? "Pause" : "Play"} className="text-white hover:text-white/80 transition-colors">
-                {playing ? <Pause className="h-5 w-5 fill-white" /> : <Play className="h-5 w-5 fill-white" />}
+              <button
+                onClick={() => {
+                  setPlaying((p) => !p);
+                }}
+                aria-label={playing ? "Pause" : "Play"}
+                className="text-white hover:text-white/80 transition-colors"
+              >
+                {playing ? (
+                  <Pause className="h-5 w-5 fill-white" />
+                ) : (
+                  <Play className="h-5 w-5 fill-white" />
+                )}
               </button>
-              <button onClick={() => nudge(-10)} aria-label="Rewind 10s" className="text-white hover:text-white/80 transition-colors">
+              <button
+                onClick={() => nudge(-10)}
+                aria-label="Rewind 10s"
+                className="text-white hover:text-white/80 transition-colors"
+              >
                 <SkipBack className="h-4 w-4" />
               </button>
-              <button onClick={skipForward} aria-label="Skip to end" className="text-white hover:text-white/80 transition-colors">
+              <button
+                onClick={skipForward}
+                aria-label="Skip to end"
+                className="text-white hover:text-white/80 transition-colors"
+              >
                 <SkipForward className="h-4 w-4" />
               </button>
-              <button onClick={() => setMuted((m) => !m)} aria-label={muted ? "Unmute" : "Mute"} className="text-white hover:text-white/80 transition-colors">
-                {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+              <button
+                onClick={() => setMuted((m) => !m)}
+                aria-label={muted ? "Unmute" : "Mute"}
+                className="text-white hover:text-white/80 transition-colors"
+              >
+                {muted ? (
+                  <VolumeX className="h-4 w-4" />
+                ) : (
+                  <Volume2 className="h-4 w-4" />
+                )}
               </button>
               <span className="text-xs text-white/80 tabular-nums">
                 {formatDuration(elapsed)} / {formatDuration(video.duration)}
@@ -296,7 +359,9 @@ export function VideoPlayer({ video, onEnded, autoplay = true, onAutoplayToggle 
                 {onAutoplayToggle && (
                   <button
                     onClick={() => onAutoplayToggle(!autoplay)}
-                    aria-label={autoplay ? "Disable autoplay" : "Enable autoplay"}
+                    aria-label={
+                      autoplay ? "Disable autoplay" : "Enable autoplay"
+                    }
                     aria-pressed={autoplay}
                     className={cn(
                       "flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-semibold transition-colors border",
@@ -317,7 +382,8 @@ export function VideoPlayer({ video, onEnded, autoplay = true, onAutoplayToggle 
                 </button>
                 <button
                   onClick={() => {
-                    if (!document.fullscreenElement) containerRef.current?.requestFullscreen().catch(() => {});
+                    if (!document.fullscreenElement)
+                      containerRef.current?.requestFullscreen().catch(() => {});
                     else document.exitFullscreen().catch(() => {});
                   }}
                   aria-label="Fullscreen"

@@ -1,12 +1,12 @@
-"use client";
+﻿"use client";
 
-import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
+import { useMemo, useState } from "react";
+import { CategoryChips } from "@/components/video/CategoryChips";
 import { FeaturedVideo } from "@/components/video/FeaturedVideo";
 import { VideoCard } from "@/components/video/VideoCard";
-import { CategoryChips } from "@/components/video/CategoryChips";
-import { mockVideos, featuredVideos } from "@/data/videos";
 import { mockCategories } from "@/data/categories";
+import { featuredVideos, mockVideos } from "@/data/videos";
 
 const stagger = {
   hidden: {},
@@ -45,7 +45,7 @@ export function HomeView() {
 
       {/* Video grid */}
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-[var(--text-secondary)]">
+        <div className="flex flex-col items-center justify-center py-24 text-text-secondary">
           <p className="text-lg font-medium">No videos in this category yet</p>
           <p className="text-sm mt-1">Try selecting a different category</p>
         </div>

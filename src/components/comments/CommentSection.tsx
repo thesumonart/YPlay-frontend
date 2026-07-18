@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
-import type { Comment } from "@/types";
-import { CommentItem } from "./CommentItem";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/shared/Avatar";
+import { useState } from "react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/shared/Avatar";
 import { Button } from "@/components/shared/Button";
 import { currentUser } from "@/data/users";
 import { formatViews } from "@/lib/utils";
+import type { Comment } from "@/types";
+import { CommentItem } from "./CommentItem";
 
 interface CommentSectionProps {
   comments: Comment[];
@@ -21,7 +25,7 @@ export function CommentSection({ comments, videoId }: CommentSectionProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <h2 className="text-base font-semibold text-[var(--text)]">
+      <h2 className="text-base font-semibold text-text">
         {formatViews(videoComments.length + 128)} Comments
       </h2>
 
@@ -38,7 +42,7 @@ export function CommentSection({ comments, videoId }: CommentSectionProps) {
             onFocus={() => setFocused(true)}
             placeholder="Add a comment..."
             aria-label="Add a comment"
-            className="w-full border-b border-[var(--border)] bg-transparent pb-2 text-sm text-[var(--text)] placeholder:text-[var(--text-secondary)] focus:outline-none focus:border-[var(--text)] transition-colors"
+            className="w-full border-b border-border bg-transparent pb-2 text-sm text-text placeholder:text-text-secondary focus:outline-none focus:border-text transition-colors"
           />
           <motion.div
             initial={false}
@@ -47,7 +51,14 @@ export function CommentSection({ comments, videoId }: CommentSectionProps) {
             className="overflow-hidden"
           >
             <div className="flex justify-end gap-2 pt-1">
-              <Button variant="ghost" size="sm" onClick={() => { setFocused(false); setInput(""); }}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setFocused(false);
+                  setInput("");
+                }}
+              >
                 Cancel
               </Button>
               <Button size="sm" disabled={!input.trim()}>
@@ -61,7 +72,7 @@ export function CommentSection({ comments, videoId }: CommentSectionProps) {
       {/* Comment list */}
       <div className="flex flex-col gap-6">
         {videoComments.length === 0 ? (
-          <p className="text-sm text-[var(--text-secondary)] text-center py-8">
+          <p className="text-sm text-text-secondary text-center py-8">
             No comments yet. Be the first to comment!
           </p>
         ) : (

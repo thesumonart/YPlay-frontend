@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 export function NavigationProgress() {
   const pathname = usePathname();
@@ -55,7 +55,7 @@ export function NavigationProgress() {
           className="fixed top-0 left-0 right-0 z-[9999] h-[2px] pointer-events-none"
         >
           <motion.div
-            className="h-full bg-[var(--primary)] origin-left"
+            className="h-full bg-primary origin-left"
             style={{ width: `${progress}%` }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.15, ease: "easeOut" }}

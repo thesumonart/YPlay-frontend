@@ -1,16 +1,24 @@
 "use client";
 
-import { useState } from "react";
-import type React from "react";
-import { motion } from "framer-motion";
-import { ThumbsUp, ThumbsDown, Share2, BookmarkPlus, MoreHorizontal, ListPlus, Ban, Flag } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import type { Video } from "@/types";
-import { formatViews } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import {
+  Ban,
+  BookmarkPlus,
+  Flag,
+  ListPlus,
+  MoreHorizontal,
+  Share2,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react";
+import type React from "react";
+import { useState } from "react";
+import { AddToPlaylistModal } from "@/components/shared/AddToPlaylistModal";
 import { Button } from "@/components/shared/Button";
 import { ShareModal } from "@/components/shared/ShareModal";
-import { AddToPlaylistModal } from "@/components/shared/AddToPlaylistModal";
+import { cn, formatViews } from "@/lib/utils";
+import type { Video } from "@/types";
 
 interface VideoActionsProps {
   video: Video;
@@ -22,9 +30,10 @@ export function VideoActions({ video }: VideoActionsProps) {
   const [saveOpen, setSaveOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
 
-  const shareUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/watch/${video.id}`
-    : `https://yplay.app/watch/${video.id}`;
+  const shareUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/watch/${video.id}`
+      : `https://yplay.app/watch/${video.id}`;
 
   const likeCount = video.likes + (liked ? 1 : 0);
 
@@ -41,17 +50,17 @@ export function VideoActions({ video }: VideoActionsProps) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {/* Like / Dislike pill */}
-      <div className="flex items-center rounded-lg border border-[var(--border)] overflow-hidden">
+      <div className="flex items-center rounded-lg border border-border overflow-hidden">
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={handleLike}
           aria-label="Like"
           aria-pressed={liked}
           className={cn(
-            "flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-r border-[var(--border)]",
+            "flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-r border-border",
             liked
-              ? "bg-[var(--primary)] text-white"
-              : "bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text)]"
+              ? "bg-primary text-white"
+              : "bg-surface text-text-secondary hover:bg-surface-secondary hover:text-text",
           )}
         >
           <ThumbsUp className="h-4 w-4" />
@@ -65,15 +74,20 @@ export function VideoActions({ video }: VideoActionsProps) {
           className={cn(
             "flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors",
             disliked
-              ? "bg-[var(--surface-secondary)] text-[var(--text)]"
-              : "bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text)]"
+              ? "bg-surface-secondary text-text"
+              : "bg-surface text-text-secondary hover:bg-surface-secondary hover:text-text",
           )}
         >
           <ThumbsDown className="h-4 w-4" />
         </motion.button>
       </div>
 
-      <Button variant="secondary" size="md" className="gap-2" onClick={() => setShareOpen(true)}>
+      <Button
+        variant="secondary"
+        size="md"
+        className="gap-2"
+        onClick={() => setShareOpen(true)}
+      >
         <Share2 className="h-4 w-4" />
         Share
       </Button>
@@ -107,7 +121,12 @@ export function VideoActions({ video }: VideoActionsProps) {
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-          <Button variant="ghost" size="icon" aria-label="More options" className="ml-auto">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="More options"
+            className="ml-auto"
+          >
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenu.Trigger>
@@ -116,25 +135,32 @@ export function VideoActions({ video }: VideoActionsProps) {
             align="end"
             sideOffset={6}
             className={cn(
-              "z-50 min-w-[180px] rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 shadow-xl",
+              "z-50 min-w-[180px] rounded-xl border border-border bg-surface p-1 shadow-xl",
               "data-[state=open]:animate-in data-[state=closed]:animate-out",
               "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
               "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
             )}
           >
-            {([
-              { icon: ListPlus, label: "Add to queue",   action: () => {} },
-              { icon: Ban,      label: "Not interested", action: () => {} },
-              { icon: Flag,     label: "Report",         action: () => {}, danger: true },
-            ] as { icon: React.ElementType; label: string; action: () => void; danger?: boolean }[]).map(({ icon: Icon, label, action, danger }) => (
+            {(
+              [
+                { icon: ListPlus, label: "Add to queue", action: () => {} },
+                { icon: Ban, label: "Not interested", action: () => {} },
+                { icon: Flag, label: "Report", action: () => {}, danger: true },
+              ] as {
+                icon: React.ElementType;
+                label: string;
+                action: () => void;
+                danger?: boolean;
+              }[]
+            ).map(({ icon: Icon, label, action, danger }) => (
               <DropdownMenu.Item
                 key={label}
                 onSelect={action}
                 className={cn(
                   "flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm outline-none transition-colors select-none",
                   danger
-                    ? "text-[var(--danger)] focus:bg-[var(--danger)]/10"
-                    : "text-[var(--text-secondary)] focus:bg-[var(--surface-secondary)] focus:text-[var(--text)]",
+                    ? "text-danger focus:bg-danger/10"
+                    : "text-text-secondary focus:bg-surface-secondary focus:text-text",
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" />
