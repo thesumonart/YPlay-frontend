@@ -65,7 +65,9 @@ export function MobileSidebar() {
             className="fixed left-0 top-0 bottom-0 z-50 w-72 bg-surface border-r border-border flex flex-col md:hidden"
           >
             <div className="flex items-center justify-between px-4 h-[var(--header-height)] border-b border-border">
-              <Logo />
+              <Link href="/" onClick={() => setSidebarOpen(false)} aria-label="YPlay home">
+                <Logo />
+              </Link>
               <Button
                 variant="ghost"
                 size="icon"

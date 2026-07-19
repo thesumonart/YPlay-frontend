@@ -30,9 +30,9 @@ export function CategoryChips({
             aria-selected={isActive}
             onClick={() => onSelect(cat.slug)}
             className={cn(
-              "relative shrink-0 rounded-lg px-4 py-1.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+              "relative shrink-0 rounded-lg px-4 py-1.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer",
               isActive
-                ? "text-white"
+                ? "text-background"
                 : "bg-surface-secondary text-text-secondary hover:text-text hover:bg-border",
             )}
           >

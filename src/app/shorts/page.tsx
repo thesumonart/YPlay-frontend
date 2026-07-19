@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "Shorts" };
 
 export default function ShortsPage() {
   return (
-    <div className="pt-[var(--header-height)] md:pl-[var(--sidebar-width)]">
+    <div className="-mx-4 -my-6 md:-mx-6 lg:-mx-8">
       <ShortsView />
     </div>
   );

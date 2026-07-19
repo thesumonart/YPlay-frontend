@@ -26,22 +26,18 @@ export function VideoCard({ video, className }: VideoCardProps) {
       className={cn("group flex flex-col gap-3", className)}
     >
       {/* Thumbnail */}
-      <div className="relative overflow-hidden rounded-xl bg-surface-secondary aspect-video">
-        <Link href={`/watch/${video.id}`} className="block w-full h-full">
-          <Image
-            src={video.thumbnail}
-            alt={video.title}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-          <span className="absolute bottom-2 right-2 rounded-md bg-black/80 px-1.5 py-0.5 text-[11px] font-medium text-white">
-            {formatDuration(video.duration)}
-          </span>
-        </Link>
-        {/* Context menu — sits above the link */}
-        <VideoCardMenu videoId={video.id} videoTitle={video.title} />
-      </div>
+      <Link href={`/watch/${video.id}`} className="relative overflow-hidden rounded-xl bg-surface-secondary aspect-video block">
+        <Image
+          src={video.thumbnail}
+          alt={video.title}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        <span className="absolute bottom-2 right-2 rounded-md bg-black/80 px-1.5 py-0.5 text-[11px] font-medium text-white">
+          {formatDuration(video.duration)}
+        </span>
+      </Link>
 
       {/* Meta */}
       <div className="flex gap-3">
@@ -51,16 +47,13 @@ export function VideoCard({ video, className }: VideoCardProps) {
             <AvatarFallback>{video.channel.name[0]}</AvatarFallback>
           </Avatar>
         </Link>
-        <div className="flex flex-col gap-0.5 min-w-0">
-          <Link
-            href={`/watch/${video.id}`}
-            className="text-sm font-semibold text-text line-clamp-2 leading-snug hover:text-primary transition-colors"
-          >
+        <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+          <Link href={`/watch/${video.id}`} className="text-sm font-semibold text-text line-clamp-2 leading-snug hover:text-primary transition-colors">
             {video.title}
           </Link>
           <Link
             href={`/channel/${video.channel.id}`}
-            className="flex items-center gap-1 text-xs text-text-secondary hover:text-text transition-colors"
+            className="inline-flex items-center gap-1 text-xs text-text-secondary hover:text-text transition-colors w-fit"
           >
             {video.channel.name}
             {video.channel.verified && (
@@ -71,6 +64,7 @@ export function VideoCard({ video, className }: VideoCardProps) {
             {formatViews(video.views)} views · {timeAgo(video.publishedAt)}
           </p>
         </div>
+        <VideoCardMenu videoId={video.id} videoTitle={video.title} />
       </div>
     </motion.article>
   );

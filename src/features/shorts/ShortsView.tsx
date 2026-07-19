@@ -23,6 +23,12 @@ export function ShortsView() {
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef<number | null>(null);
 
+  // Lock body scroll while shorts are mounted
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
   // Detect touch device on mount
   useEffect(() => {
     setIsTouch(navigator.maxTouchPoints > 0);
@@ -96,16 +102,16 @@ export function ShortsView() {
 
   return (
     <div
-      className="relative flex justify-center"
+      className="relative h-[calc(100dvh-var(--header-height))] overflow-hidden"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Scroll container */}
+      {/* Scroll container — full width so entire area is scrollable */}
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className="h-[calc(100dvh-var(--header-height))] w-full max-w-sm overflow-y-scroll snap-y snap-mandatory"
+        className="h-[calc(100dvh-var(--header-height))] w-full overflow-y-scroll snap-y snap-mandatory"
         style={{ scrollbarWidth: "none" }}
         aria-label="Shorts feed"
       >
@@ -189,23 +195,6 @@ export function ShortsView() {
         >
           <ChevronDown className="h-5 w-5 text-text" />
         </motion.button>
-      </div>
-
-      {/* Dot indicators — desktop */}
-      <div className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 flex-col gap-1.5 z-40">
-        {shortVideos.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goTo(i)}
-            aria-label={`Go to short ${i + 1}`}
-            className={cn(
-              "rounded-full transition-all duration-200",
-              i === activeIndex
-                ? "h-5 w-1.5 bg-primary"
-                : "h-1.5 w-1.5 bg-border hover:bg-text-secondary",
-            )}
-          />
-        ))}
       </div>
 
       {/* Hint toast — keyboard on desktop, swipe on touch */}

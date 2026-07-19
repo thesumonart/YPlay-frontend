@@ -403,7 +403,9 @@ export function Header() {
           >
             <Menu className="h-5 w-5" />
           </Button>
-          <Logo />
+          <Link href="/" aria-label="YPlay home">
+            <Logo />
+          </Link>
         </div>
 
         {/* Desktop search */}

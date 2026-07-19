@@ -53,11 +53,9 @@ export function VideoCardMenu({ videoId, videoTitle }: VideoCardMenuProps) {
             aria-label="More options"
             onClick={(e) => e.preventDefault()}
             className={cn(
-              "absolute top-2 right-2 z-10 flex h-7 w-7 items-center justify-center rounded-lg",
-              "bg-black/70 text-white backdrop-blur-sm",
-              "opacity-0 group-hover:opacity-100 focus:opacity-100",
-              "transition-opacity duration-150",
-              "hover:bg-black/90",
+              "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg cursor-pointer",
+              "text-text-secondary hover:text-text hover:bg-surface-secondary",
+              "transition-colors duration-150",
             )}
           >
             <MoreVertical className="h-3.5 w-3.5" />
