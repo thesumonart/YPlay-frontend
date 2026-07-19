@@ -1,15 +1,9 @@
-﻿import { Home, Search, TrendingUp } from "lucide-react";
+﻿import { Home, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import { Logo } from "@/components/shared/Logo";
 
 export default function NotFound() {
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-background px-6 text-center">
-      {/* Logo */}
-      <Link href="/" className="mb-10">
-        <Logo />
-      </Link>
-
       {/* Glitchy 404 */}
       <div className="relative select-none mb-6">
         <span className="text-[120px] md:text-[160px] font-black leading-none text-surface-secondary tracking-tighter">
@@ -63,13 +57,7 @@ export default function NotFound() {
           <TrendingUp className="h-4 w-4" />
           Trending
         </Link>
-        <Link
-          href="/search"
-          className="flex items-center gap-2 rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-medium text-text hover:bg-surface-secondary transition-colors"
-        >
-          <Search className="h-4 w-4" />
-          Search
-        </Link>
+
       </div>
     </div>
   );

@@ -35,7 +35,6 @@ const navSections = [
     label: "Explore",
     items: [
       { label: "Trending", href: "/trending", icon: TrendingUp },
-      { label: "Search", href: "/search", icon: Search },
       { label: "Discover", href: "/discover", icon: Compass },
     ],
   },
@@ -78,10 +77,7 @@ function NavItem({ href, icon: Icon, label, collapsed, active }: NavItemProps) {
       )}
     >
       <Icon
-        className={cn(
-          "shrink-0",
-          active ? "text-primary" : "h-[18px] w-[18px]",
-        )}
+        className={cn("shrink-0", active ? "text-primary" : "h-4.5 w-4.5")}
         size={18}
       />
       <AnimatePresence initial={false}>
@@ -122,7 +118,7 @@ export function Sidebar() {
           : "var(--sidebar-width)",
       }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
-      className="hidden md:flex flex-col fixed left-0 top-[var(--header-height)] bottom-0 z-40 border-r border-border bg-surface overflow-hidden"
+      className="hidden md:flex flex-col fixed left-0 top-(--header-height) bottom-0 z-40 border-r border-border bg-surface overflow-hidden"
     >
       <nav className="flex flex-col gap-1 p-2 flex-1 overflow-y-auto overflow-x-hidden">
         {navSections.map((section, si) => (
@@ -148,7 +144,11 @@ export function Sidebar() {
                 key={item.href}
                 {...item}
                 collapsed={sidebarCollapsed}
-                active={pathname === item.href}
+                active={
+                  item.href === "/studio"
+                    ? pathname.startsWith("/studio")
+                    : pathname === item.href
+                }
               />
             ))}
           </div>
