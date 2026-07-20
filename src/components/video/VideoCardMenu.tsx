@@ -51,7 +51,6 @@ export function VideoCardMenu({ videoId, videoTitle }: VideoCardMenuProps) {
         <DropdownMenu.Trigger asChild>
           <button
             aria-label="More options"
-            onClick={(e) => e.preventDefault()}
             className={cn(
               "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg cursor-pointer",
               "text-text-secondary hover:text-text hover:bg-surface-secondary",

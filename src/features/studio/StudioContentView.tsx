@@ -67,12 +67,13 @@ type VideoWithStatus = (typeof mockVideos)[number] & {
   status: Exclude<StatusFilter, "all">;
 };
 
-const myVideos: VideoWithStatus[] = mockVideos
+const initialVideos: VideoWithStatus[] = mockVideos
   .filter((v) => v.channel.id === "u1")
   .map((v, i) => ({ ...v, status: deriveStatus(i) }));
 
 export function StudioContentView() {
   const router = useRouter();
+  const [videos, setVideos] = useState(initialVideos);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [sortKey, setSortKey] = useState<SortKey>("date");
@@ -80,8 +81,13 @@ export function StudioContentView() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [showSort, setShowSort] = useState(false);
 
+  const deleteVideos = useCallback((ids: Set<string>) => {
+    setVideos((prev) => prev.filter((v) => !ids.has(v.id)));
+    setSelected(new Set());
+  }, []);
+
   const filtered = useMemo(() => {
-    let result: VideoWithStatus[] = myVideos;
+    let result: VideoWithStatus[] = videos;
 
     if (query.trim()) {
       const q = query.toLowerCase();
@@ -127,7 +133,7 @@ export function StudioContentView() {
 
   const statusCounts = useMemo(() => {
     const counts: Record<StatusFilter, number> = {
-      all: myVideos.length,
+      all: videos.length,
       published: 0,
       draft: 0,
       private: 0,
@@ -143,7 +149,7 @@ export function StudioContentView() {
         <div>
           <h1 className="text-xl font-bold text-text">Content</h1>
           <p className="text-sm text-text-secondary mt-0.5">
-            {myVideos.length} videos
+            {videos.length} videos
           </p>
         </div>
         <Button asChild size="sm">
@@ -296,6 +302,7 @@ export function StudioContentView() {
                 variant="ghost"
                 size="sm"
                 className="gap-1.5 text-danger hover:text-danger hover:bg-danger/10"
+                onClick={() => deleteVideos(selected)}
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 Delete
@@ -517,7 +524,7 @@ export function StudioContentView() {
                                   {
                                     icon: Trash2,
                                     label: "Delete",
-                                    action: () => {},
+                                    action: () => deleteVideos(new Set([video.id])),
                                     danger: true,
                                   },
                                 ].map(

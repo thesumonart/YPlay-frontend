@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { BookMarked, Clock, History, ListVideo, Trash2 } from "lucide-react";
+import { BookMarked, Clock, History, ListVideo, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/shared/Button";
 import { HistoryCard } from "@/components/shared/HistoryCard";
@@ -137,8 +137,16 @@ export function WatchLaterView() {
                   layout
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
+                  className="relative group/card"
                 >
                   <VideoCard video={video} />
+                  <button
+                    onClick={() => setWatchLater((v) => v.filter((x) => x.id !== video.id))}
+                    aria-label="Remove from Watch Later"
+                    className="absolute top-1 right-1 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover/card:opacity-100 transition-opacity hover:bg-black/80"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -221,8 +229,16 @@ export function SavedView() {
                   layout
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
+                  className="relative group/card"
                 >
                   <VideoCard video={video} />
+                  <button
+                    onClick={() => setSaved((v) => v.filter((x) => x.id !== video.id))}
+                    aria-label="Remove from Saved"
+                    className="absolute top-1 right-1 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover/card:opacity-100 transition-opacity hover:bg-black/80"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
                 </motion.div>
               ))}
             </AnimatePresence>

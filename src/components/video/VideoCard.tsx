@@ -21,6 +21,7 @@ interface VideoCardProps {
 export function VideoCard({ video, className }: VideoCardProps) {
   return (
     <motion.article
+      aria-label={video.title}
       whileHover={{ y: -2 }}
       transition={{ duration: 0.15 }}
       className={cn("group flex flex-col gap-3", className)}

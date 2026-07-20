@@ -13,6 +13,8 @@ interface FeaturedVideoProps {
 export function FeaturedVideo({ video }: FeaturedVideoProps) {
   return (
     <motion.div
+      role="region"
+      aria-label="Featured video"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}

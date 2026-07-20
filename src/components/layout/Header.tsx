@@ -97,6 +97,8 @@ function NotificationsPanel({ onClose }: NotificationsPanelProps) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 8, scale: 0.97 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
+      role="menu"
+      aria-label="Notifications"
       className="absolute right-0 top-full mt-2 w-[360px] max-w-[calc(100vw-2rem)] rounded-2xl border border-border bg-surface shadow-xl overflow-hidden z-50"
     >
       {/* Header */}
@@ -269,6 +271,8 @@ function ProfilePanel({ onClose }: ProfilePanelProps) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 8, scale: 0.97 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
+      role="menu"
+      aria-label="Account menu"
       className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-border bg-surface shadow-xl overflow-hidden z-50"
     >
       {/* Profile header */}

@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Bell,
+  Check,
   Globe,
   Monitor,
   Moon,
@@ -13,7 +14,7 @@ import {
   User,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Avatar,
   AvatarFallback,
@@ -45,6 +46,20 @@ type SectionId = (typeof NAV_ITEMS)[number]["id"];
 export function SettingsView() {
   const [activeSection, setActiveSection] = useState<SectionId>("account");
   const { theme, setTheme } = useTheme();
+
+  // Profile fields
+  const [displayName, setDisplayName] = useState(currentUser.name);
+  const [handle, setHandle] = useState(currentUser.handle);
+  const [profileSaved, setProfileSaved] = useState(false);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const saveProfile = () => {
+    setProfileSaved(true);
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => setProfileSaved(false), 2000);
+  };
+
+  useEffect(() => () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); }, []);
 
   // Notification toggles
   const [notifToggles, setNotifToggles] = useState({
@@ -94,28 +109,32 @@ export function SettingsView() {
 
       <div className="flex flex-col md:flex-row gap-6">
         {/* Sidebar nav */}
-        <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible md:w-52 shrink-0 pb-1 md:pb-0">
-          {NAV_ITEMS.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              onClick={() => setActiveSection(id)}
-              className={cn(
-                "flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-left",
-                activeSection === id
-                  ? "bg-surface-secondary text-text"
-                  : "text-text-secondary hover:bg-surface-secondary hover:text-text",
-              )}
-            >
-              <Icon
+        <div className="relative md:w-52 shrink-0">
+          <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible pb-1 md:pb-0">
+            {NAV_ITEMS.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveSection(id)}
                 className={cn(
-                  "h-4 w-4 shrink-0",
-                  activeSection === id && "text-primary",
+                  "flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-left",
+                  activeSection === id
+                    ? "bg-surface-secondary text-text"
+                    : "text-text-secondary hover:bg-surface-secondary hover:text-text",
                 )}
-              />
-              {label}
-            </button>
-          ))}
-        </nav>
+              >
+                <Icon
+                  className={cn(
+                    "h-4 w-4 shrink-0",
+                    activeSection === id && "text-primary",
+                  )}
+                />
+                {label}
+              </button>
+            ))}
+          </nav>
+          {/* Scroll fade indicator — mobile only */}
+          <div className="pointer-events-none absolute right-0 top-0 bottom-1 w-8 bg-gradient-to-l from-background to-transparent md:hidden" />
+        </div>
 
         {/* Section content */}
         <div className="flex-1 min-w-0">
@@ -151,22 +170,49 @@ export function SettingsView() {
                           variant="outline"
                           size="sm"
                           className="mt-2 w-fit"
+                          onClick={() => alert("Photo upload is not available in this demo.")}
                         >
                           Change photo
                         </Button>
                       </div>
                     </div>
-                    <SettingsRow label="Display name">
-                      <input
-                        defaultValue={currentUser.name}
-                        className="h-9 w-48 rounded-lg border border-border bg-surface-secondary px-3 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                      />
+                    <SettingsRow label="Display name" htmlFor="display-name">
+                      <div className="flex items-center gap-2">
+                        <input
+                          id="display-name"
+                          value={displayName}
+                          onChange={(e) => setDisplayName(e.target.value)}
+                          className="h-9 w-48 rounded-lg border border-border bg-surface-secondary px-3 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                      </div>
                     </SettingsRow>
-                    <SettingsRow label="Handle">
-                      <input
-                        defaultValue={currentUser.handle}
-                        className="h-9 w-48 rounded-lg border border-border bg-surface-secondary px-3 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                      />
+                    <SettingsRow label="Handle" htmlFor="handle">
+                      <div className="flex items-center gap-2">
+                        <input
+                          id="handle"
+                          value={handle}
+                          onChange={(e) => setHandle(e.target.value)}
+                          className="h-9 w-48 rounded-lg border border-border bg-surface-secondary px-3 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                      </div>
+                    </SettingsRow>
+                    <SettingsRow label="">
+                      <div className="flex items-center gap-2">
+                        <Button size="sm" onClick={saveProfile}>Save changes</Button>
+                        <AnimatePresence>
+                          {profileSaved && (
+                            <motion.span
+                              initial={{ opacity: 0, x: -4 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0 }}
+                              className="flex items-center gap-1 text-xs font-medium text-success"
+                            >
+                              <Check className="h-3.5 w-3.5" />
+                              Saved
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
+                      </div>
                     </SettingsRow>
                   </SettingsSection>
 
@@ -180,7 +226,7 @@ export function SettingsView() {
                       </span>
                     </SettingsRow>
                     <SettingsRow label="Password">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => alert("Password change is not available in this demo.")}>
                         Change password
                       </Button>
                     </SettingsRow>
@@ -208,7 +254,7 @@ export function SettingsView() {
                       label="Delete account"
                       description="Permanently delete your account and all data"
                     >
-                      <Button variant="destructive" size="sm">
+                      <Button variant="destructive" size="sm" onClick={() => alert("Account deletion is not available in this demo.")}>
                         Delete account
                       </Button>
                     </SettingsRow>
@@ -379,7 +425,7 @@ export function SettingsView() {
                       label="Download your data"
                       description="Export a copy of all your YPlay data"
                     >
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => alert("Data export is not available in this demo.")}>
                         <Globe className="h-3.5 w-3.5" />
                         Request export
                       </Button>

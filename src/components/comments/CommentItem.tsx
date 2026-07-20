@@ -19,7 +19,27 @@ interface CommentItemProps {
 export function CommentItem({ comment, isReply = false }: CommentItemProps) {
   const [liked, setLiked] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
+  const [replying, setReplying] = useState(false);
+  const [replyInput, setReplyInput] = useState("");
+  const [localReplies, setLocalReplies] = useState<Comment[]>(comment.replies ?? []);
   const likeCount = comment.likes + (liked ? 1 : 0);
+
+  const submitReply = () => {
+    const trimmed = replyInput.trim();
+    if (!trimmed) return;
+    const newReply: Comment = {
+      id: `r-${Date.now()}`,
+      videoId: comment.videoId,
+      author: { id: "me", name: "You", handle: "@yourhandle", avatar: "https://i.pravatar.cc/150?img=33", subscribers: 0, verified: false, joinedAt: "2024-01-01", totalViews: 0, videoCount: 0 },
+      content: trimmed,
+      likes: 0,
+      publishedAt: new Date().toISOString(),
+    };
+    setLocalReplies((prev) => [...prev, newReply]);
+    setReplyInput("");
+    setReplying(false);
+    setShowReplies(true);
+  };
 
   return (
     <div className={cn("flex gap-3", isReply && "ml-10 mt-3")}>
@@ -60,14 +80,58 @@ export function CommentItem({ comment, isReply = false }: CommentItemProps) {
           </button>
 
           {!isReply && (
-            <button className="text-xs text-text-secondary hover:text-text font-medium transition-colors">
+            <button
+              onClick={() => setReplying((r) => !r)}
+              className="text-xs text-text-secondary hover:text-text font-medium transition-colors"
+            >
               Reply
             </button>
           )}
         </div>
 
+        {/* Reply input */}
+        <AnimatePresence>
+          {replying && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden mt-2"
+            >
+              <div className="flex gap-2">
+                <input
+                  autoFocus
+                  value={replyInput}
+                  onChange={(e) => setReplyInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") submitReply();
+                    if (e.key === "Escape") { setReplying(false); setReplyInput(""); }
+                  }}
+                  placeholder={`Reply to ${comment.author.name}…`}
+                  aria-label="Write a reply"
+                  className="flex-1 border-b border-border bg-transparent pb-1.5 text-sm text-text placeholder:text-text-secondary focus:outline-none focus:border-text transition-colors"
+                />
+                <button
+                  onClick={submitReply}
+                  disabled={!replyInput.trim()}
+                  className="text-xs font-semibold text-primary disabled:opacity-40 transition-colors"
+                >
+                  Reply
+                </button>
+                <button
+                  onClick={() => { setReplying(false); setReplyInput(""); }}
+                  className="text-xs font-medium text-text-secondary hover:text-text transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Replies toggle */}
-        {!isReply && comment.replies && comment.replies.length > 0 && (
+        {!isReply && localReplies.length > 0 && (
           <div>
             <button
               onClick={() => setShowReplies((s) => !s)}
@@ -78,8 +142,8 @@ export function CommentItem({ comment, isReply = false }: CommentItemProps) {
               ) : (
                 <ChevronDown className="h-3.5 w-3.5" />
               )}
-              {comment.replies.length}{" "}
-              {comment.replies.length === 1 ? "reply" : "replies"}
+              {localReplies.length}{" "}
+              {localReplies.length === 1 ? "reply" : "replies"}
             </button>
 
             <AnimatePresence>
@@ -91,7 +155,7 @@ export function CommentItem({ comment, isReply = false }: CommentItemProps) {
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  {comment.replies.map((reply) => (
+                  {localReplies.map((reply) => (
                     <CommentItem key={reply.id} comment={reply} isReply />
                   ))}
                 </motion.div>

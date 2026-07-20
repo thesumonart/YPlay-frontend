@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 
 interface SettingsRowProps {
   label: string;
+  htmlFor?: string;
   description?: string;
   children: React.ReactNode;
   className?: string;
@@ -9,6 +10,7 @@ interface SettingsRowProps {
 
 export function SettingsRow({
   label,
+  htmlFor,
   description,
   children,
   className,
@@ -21,7 +23,11 @@ export function SettingsRow({
       )}
     >
       <div className="flex flex-col gap-0.5 min-w-0">
-        <span className="text-sm font-medium text-text">{label}</span>
+        {htmlFor ? (
+          <label htmlFor={htmlFor} className="text-sm font-medium text-text cursor-pointer">{label}</label>
+        ) : (
+          <span className="text-sm font-medium text-text">{label}</span>
+        )}
         {description && (
           <span className="text-xs text-text-secondary leading-relaxed">
             {description}

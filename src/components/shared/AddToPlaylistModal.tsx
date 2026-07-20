@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, Globe, Link2, ListVideo, Lock, Plus, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { mockPlaylists } from "@/data/playlists";
 import { cn } from "@/lib/utils";
 import type { Playlist } from "@/types";
@@ -45,6 +45,18 @@ export function AddToPlaylistModal({
     useState<Playlist["visibility"]>("public");
   const [localPlaylists, setLocalPlaylists] =
     useState<Playlist[]>(userPlaylists);
+
+  const triggerRef = useRef<HTMLElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (open) {
+      triggerRef.current = document.activeElement as HTMLElement;
+      setTimeout(() => closeButtonRef.current?.focus(), 50);
+    } else {
+      triggerRef.current?.focus();
+    }
+  }, [open]);
 
   useEffect(() => {
     const initial = new Set<string>();
@@ -127,6 +139,7 @@ export function AddToPlaylistModal({
             <div className="flex items-center justify-between px-5 py-4 border-b border-border">
               <h2 className="text-sm font-bold text-text">Save to playlist</h2>
               <button
+                ref={closeButtonRef}
                 onClick={onClose}
                 aria-label="Close"
                 className="flex h-7 w-7 items-center justify-center rounded-lg text-text-secondary hover:bg-surface-secondary hover:text-text transition-colors"

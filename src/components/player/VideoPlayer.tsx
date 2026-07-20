@@ -49,6 +49,30 @@ export function VideoPlayer({
   const [showShortcuts, setShowShortcuts] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const progressTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Auto-advance progress while playing
+  useEffect(() => {
+    if (playing) {
+      progressTimer.current = setInterval(() => {
+        setProgress((p) => {
+          const next = p + 1 / (video.duration * 10);
+          if (next >= 1) {
+            clearInterval(progressTimer.current!);
+            setPlaying(false);
+            onEnded?.();
+            return 1;
+          }
+          return next;
+        });
+      }, 100);
+    } else {
+      if (progressTimer.current) clearInterval(progressTimer.current);
+    }
+    return () => {
+      if (progressTimer.current) clearInterval(progressTimer.current);
+    };
+  }, [playing, video.duration, onEnded]);
 
   const nudge = useCallback(
     (seconds: number) => {
@@ -67,11 +91,6 @@ export function VideoPlayer({
     setTimeout(() => setShowPlayPulse(false), 600);
     setShowControls(true);
     if (controlsTimer.current) clearTimeout(controlsTimer.current);
-    setPlaying((p) => {
-      if (p)
-        controlsTimer.current = setTimeout(() => setShowControls(false), 2500);
-      return p;
-    });
   }, []);
 
   useEffect(() => {
@@ -301,6 +320,7 @@ export function VideoPlayer({
               aria-valuenow={Math.round(progress * 100)}
               aria-valuemin={0}
               aria-valuemax={100}
+              aria-valuetext={`${formatDuration(elapsed)} of ${formatDuration(video.duration)}`}
               tabIndex={0}
             >
               <div

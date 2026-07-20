@@ -137,6 +137,24 @@ export function StudioCommentsView() {
   const submitReply = useCallback(
     (commentId: string) => {
       if (!replyText.trim()) return;
+      const newReply: Comment = {
+        id: `reply-${Date.now()}`,
+        videoId: commentId,
+        author: { id: "u1", name: "You", avatar: "", handle: "@you", verified: false, subscribers: 0, videoCount: 0, joinedAt: "", bio: "" },
+        content: replyText.trim(),
+        likes: 0,
+        publishedAt: new Date().toISOString(),
+        isPinned: false,
+        replies: [],
+      };
+      setComments((prev) =>
+        prev.map((c) =>
+          c.id === commentId
+            ? { ...c, replies: [...(c.replies ?? []), newReply] }
+            : c,
+        ),
+      );
+      setExpandedReplies((prev) => new Set(prev).add(commentId));
       setReplyingTo(null);
       setReplyText("");
     },

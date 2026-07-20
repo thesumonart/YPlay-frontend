@@ -6,12 +6,14 @@ import { ChannelAbout } from "@/components/channel/ChannelAbout";
 import { ChannelBanner } from "@/components/channel/ChannelBanner";
 import { PlaylistCard } from "@/components/video/PlaylistCard";
 import { VideoCard } from "@/components/video/VideoCard";
+import Link from "next/link";
+import Image from "next/image";
 import { mockPlaylists } from "@/data/playlists";
 import { mockVideos } from "@/data/videos";
-import { cn } from "@/lib/utils";
+import { cn, formatDuration, formatViews } from "@/lib/utils";
 import type { User } from "@/types";
 
-const TABS = ["Videos", "Playlists", "About"] as const;
+const TABS = ["Home", "Videos", "Shorts", "Playlists", "About"] as const;
 type Tab = (typeof TABS)[number];
 
 interface ChannelViewProps {
@@ -24,9 +26,13 @@ export function ChannelView({ channel }: ChannelViewProps) {
   const channelVideos = mockVideos.filter(
     (v) => v.channel.id === channel.id && !v.isShort,
   );
+  const channelShorts = mockVideos.filter(
+    (v) => v.channel.id === channel.id && v.isShort,
+  );
   const channelPlaylists = mockPlaylists.filter(
     (p) => p.owner.id === channel.id && p.visibility === "public",
   );
+  const pinnedVideo = channelVideos[0] ?? null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -62,10 +68,46 @@ export function ChannelView({ channel }: ChannelViewProps) {
       {/* Tab content */}
       <motion.div
         key={activeTab}
+        role="tabpanel"
+        aria-labelledby={activeTab}
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
       >
+        {activeTab === "Home" && (
+          <div className="flex flex-col gap-8">
+            {pinnedVideo ? (
+              <div className="flex flex-col gap-3">
+                <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide">Featured</h2>
+                <Link href={`/watch/${pinnedVideo.id}`} className="group flex gap-4 rounded-xl overflow-hidden hover:bg-surface transition-colors p-2 -m-2">
+                  <div className="relative w-64 shrink-0 aspect-video rounded-lg overflow-hidden">
+                    <Image src={pinnedVideo.thumbnail} alt={pinnedVideo.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="256px" />
+                    <span className="absolute bottom-1.5 right-1.5 rounded bg-black/80 px-1 py-0.5 text-[11px] font-medium text-white">{formatDuration(pinnedVideo.duration)}</span>
+                  </div>
+                  <div className="flex flex-col gap-1 py-1">
+                    <p className="font-semibold text-text line-clamp-2">{pinnedVideo.title}</p>
+                    <p className="text-sm text-text-secondary">{formatViews(pinnedVideo.views)} views</p>
+                    <p className="mt-2 text-sm text-text-secondary line-clamp-3">{pinnedVideo.description}</p>
+                  </div>
+                </Link>
+              </div>
+            ) : null}
+            {channelVideos.length > 1 && (
+              <div className="flex flex-col gap-3">
+                <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide">Recent uploads</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-6">
+                  {channelVideos.slice(1, 6).map((video) => (
+                    <VideoCard key={video.id} video={video} />
+                  ))}
+                </div>
+              </div>
+            )}
+            {channelVideos.length === 0 && (
+              <p className="py-16 text-center text-sm text-text-secondary">No content yet.</p>
+            )}
+          </div>
+        )}
+
         {activeTab === "Videos" &&
           (channelVideos.length === 0 ? (
             <p className="py-16 text-center text-sm text-text-secondary">
@@ -78,6 +120,25 @@ export function ChannelView({ channel }: ChannelViewProps) {
               ))}
             </div>
           ))}
+
+        {activeTab === "Shorts" && (
+          channelShorts.length === 0 ? (
+            <p className="py-16 text-center text-sm text-text-secondary">No shorts uploaded yet.</p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+              {channelShorts.map((short) => (
+                <Link key={short.id} href={`/shorts?id=${short.id}`} className="group flex flex-col gap-2">
+                  <div className="relative aspect-[9/16] rounded-xl overflow-hidden bg-surface">
+                    <Image src={short.thumbnail} alt={short.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 640px) 50vw, 20vw" />
+                    <span className="absolute bottom-1.5 right-1.5 rounded bg-black/80 px-1 py-0.5 text-[11px] font-medium text-white">{formatDuration(short.duration)}</span>
+                  </div>
+                  <p className="text-xs font-medium text-text line-clamp-2 leading-snug">{short.title}</p>
+                  <p className="text-[11px] text-text-secondary">{formatViews(short.views)} views</p>
+                </Link>
+              ))}
+            </div>
+          )
+        )}
 
         {activeTab === "Playlists" &&
           (channelPlaylists.length === 0 ? (

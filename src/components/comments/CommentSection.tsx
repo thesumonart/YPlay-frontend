@@ -21,12 +21,33 @@ interface CommentSectionProps {
 export function CommentSection({ comments, videoId }: CommentSectionProps) {
   const [input, setInput] = useState("");
   const [focused, setFocused] = useState(false);
-  const videoComments = comments.filter((c) => c.videoId === videoId);
+  const [localComments, setLocalComments] = useState<Comment[]>(
+    comments.filter((c) => c.videoId === videoId),
+  );
+
+  const handleSubmit = () => {
+    const trimmed = input.trim();
+    if (!trimmed) return;
+    const newComment: Comment = {
+      id: `c-${Date.now()}`,
+      videoId,
+      author: currentUser,
+      content: trimmed,
+      likes: 0,
+      publishedAt: new Date().toISOString(),
+      replies: [],
+    };
+    setLocalComments((prev) => [newComment, ...prev]);
+    setInput("");
+    setFocused(false);
+  };
+
+  const videoComments = localComments;
 
   return (
     <div className="flex flex-col gap-6">
       <h2 className="text-base font-semibold text-text">
-        {formatViews(videoComments.length + 128)} Comments
+        {formatViews(videoComments.length)} Comments
       </h2>
 
       {/* Comment input */}
@@ -40,6 +61,7 @@ export function CommentSection({ comments, videoId }: CommentSectionProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onFocus={() => setFocused(true)}
+            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
             placeholder="Add a comment..."
             aria-label="Add a comment"
             className="w-full border-b border-border bg-transparent pb-2 text-sm text-text placeholder:text-text-secondary focus:outline-none focus:border-text transition-colors"
@@ -61,7 +83,7 @@ export function CommentSection({ comments, videoId }: CommentSectionProps) {
               >
                 Cancel
               </Button>
-              <Button size="sm" disabled={!input.trim()}>
+              <Button size="sm" disabled={!input.trim()} onClick={handleSubmit}>
                 Comment
               </Button>
             </div>

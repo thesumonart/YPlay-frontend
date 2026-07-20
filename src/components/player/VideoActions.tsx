@@ -48,7 +48,7 @@ export function VideoActions({ video }: VideoActionsProps) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex items-center gap-2 overflow-x-auto">
       {/* Like / Dislike pill */}
       <div className="flex items-center rounded-lg border border-border overflow-hidden">
         <motion.button

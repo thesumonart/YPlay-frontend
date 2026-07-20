@@ -51,28 +51,32 @@ export function StudioLayout({ children }: { children: React.ReactNode }) {
 
       <div className="flex flex-col md:flex-row gap-6">
         {/* Studio sidebar */}
-        <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible md:w-48 shrink-0 pb-1 md:pb-0">
-          {STUDIO_NAV.map(({ href, label, icon: Icon }) => {
-            const active = pathname === href;
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={cn(
-                  "flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-surface-secondary text-text"
-                    : "text-text-secondary hover:bg-surface-secondary hover:text-text",
-                )}
-              >
-                <Icon
-                  className={cn("h-4 w-4 shrink-0", active && "text-primary")}
-                />
-                {label}
-              </Link>
-            );
-          })}
-        </nav>
+        <div className="relative md:w-48 shrink-0">
+          <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible pb-1 md:pb-0">
+            {STUDIO_NAV.map(({ href, label, icon: Icon }) => {
+              const active = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={cn(
+                    "flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                    active
+                      ? "bg-surface-secondary text-text"
+                      : "text-text-secondary hover:bg-surface-secondary hover:text-text",
+                  )}
+                >
+                  <Icon
+                    className={cn("h-4 w-4 shrink-0", active && "text-primary")}
+                  />
+                  {label}
+                </Link>
+              );
+            })}
+          </nav>
+          {/* Scroll fade indicator — mobile only */}
+          <div className="pointer-events-none absolute right-0 top-0 bottom-1 w-8 bg-gradient-to-l from-background to-transparent md:hidden" />
+        </div>
 
         {/* Page content */}
         <div className="flex-1 min-w-0">{children}</div>

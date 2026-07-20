@@ -222,21 +222,12 @@ export function ShareModal({
 
                   {/* Start at timestamp */}
                   <label className="flex items-center gap-2.5 cursor-pointer select-none">
-                    <div
-                      role="checkbox"
-                      aria-checked={startAt}
-                      tabIndex={0}
-                      onClick={() => setStartAt((s) => !s)}
-                      onKeyDown={(e) => e.key === " " && setStartAt((s) => !s)}
-                      className={cn(
-                        "h-4 w-4 rounded border-2 flex items-center justify-center transition-colors",
-                        startAt
-                          ? "bg-primary border-primary"
-                          : "border-border bg-surface",
-                      )}
-                    >
-                      {startAt && <Check className="h-2.5 w-2.5 text-white" />}
-                    </div>
+                    <input
+                      type="checkbox"
+                      checked={startAt}
+                      onChange={() => setStartAt((s) => !s)}
+                      className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
+                    />
                     <span className="text-sm text-text">Start at</span>
                     {startAt && (
                       <input
